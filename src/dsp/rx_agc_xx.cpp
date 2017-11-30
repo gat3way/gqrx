@@ -25,10 +25,10 @@
 #include <gnuradio/gr_complex.h>
 #include <dsp/rx_agc_xx.h>
 
-rx_agc_cc_sptr make_rx_agc_cc(double sample_rate, bool agc_on, int threshold,
+rx_agc_ff_sptr make_rx_agc_ff(double sample_rate, bool agc_on, int threshold,
                               int manual_gain, int slope, int decay, bool use_hang)
 {
-    return gnuradio::get_initial_sptr(new rx_agc_cc(sample_rate, agc_on, threshold,
+    return gnuradio::get_initial_sptr(new rx_agc_ff(sample_rate, agc_on, threshold,
                                                     manual_gain, slope, decay,
                                                     use_hang));
 }
@@ -36,13 +36,13 @@ rx_agc_cc_sptr make_rx_agc_cc(double sample_rate, bool agc_on, int threshold,
 /**
  * \brief Create receiver AGC object.
  *
- * Use make_rx_agc_cc() instead.
+ * Use make_rx_agc_ff() instead.
  */
-rx_agc_cc::rx_agc_cc(double sample_rate, bool agc_on, int threshold,
+rx_agc_ff::rx_agc_ff(double sample_rate, bool agc_on, int threshold,
                      int manual_gain, int slope, int decay, bool use_hang)
-    : gr::sync_block ("rx_agc_cc",
-          gr::io_signature::make(1, 1, sizeof(gr_complex)),
-          gr::io_signature::make(1, 1, sizeof(gr_complex))),
+    : gr::sync_block ("rx_agc_ff",
+          gr::io_signature::make(1, 1, sizeof(float)),
+          gr::io_signature::make(1, 1, sizeof(float))),
       d_agc_on(agc_on),
       d_sample_rate(sample_rate),
       d_threshold(threshold),
@@ -56,7 +56,7 @@ rx_agc_cc::rx_agc_cc(double sample_rate, bool agc_on, int threshold,
                          d_slope, d_decay, d_sample_rate);
 }
 
-rx_agc_cc::~rx_agc_cc()
+rx_agc_ff::~rx_agc_ff()
 {
     delete d_agc;
 }
@@ -67,12 +67,12 @@ rx_agc_cc::~rx_agc_cc()
  * \param input_items
  * \param output_items
  */
-int rx_agc_cc::work(int noutput_items,
+int rx_agc_ff::work(int noutput_items,
                     gr_vector_const_void_star &input_items,
                     gr_vector_void_star &output_items)
 {
-    const gr_complex *in = (const gr_complex *) input_items[0];
-    gr_complex *out = (gr_complex *) output_items[0];
+    const float *in = (const float *) input_items[0];
+    float *out = (float *) output_items[0];
 
     boost::mutex::scoped_lock lock(d_mutex);
     d_agc->ProcessData(noutput_items, in, out);
@@ -88,7 +88,7 @@ int rx_agc_cc::work(int noutput_items,
  *
  * \sa set_manual_gain()
  */
-void rx_agc_cc::set_agc_on(bool agc_on)
+void rx_agc_ff::set_agc_on(bool agc_on)
 {
     if (agc_on != d_agc_on) {
         boost::mutex::scoped_lock lock(d_mutex);
@@ -105,7 +105,7 @@ void rx_agc_cc::set_agc_on(bool agc_on)
  * The AGC uses knowledge about the sample rate to calculate various delays and
  * time constants.
  */
-void rx_agc_cc::set_sample_rate(double sample_rate)
+void rx_agc_ff::set_sample_rate(double sample_rate)
 {
     if (sample_rate != d_sample_rate) {
         boost::mutex::scoped_lock lock(d_mutex);
@@ -121,7 +121,7 @@ void rx_agc_cc::set_sample_rate(double sample_rate)
  *
  * The threshold specifies AGC "knee" in dB when the AGC is active.
  */
-void rx_agc_cc::set_threshold(int threshold)
+void rx_agc_ff::set_threshold(int threshold)
 {
     if ((threshold != d_threshold) && (threshold >= -160) && (threshold <= 0)) {
         boost::mutex::scoped_lock lock(d_mutex);
@@ -139,7 +139,7 @@ void rx_agc_cc::set_threshold(int threshold)
  *
  * \sa set_agc_on()
  */
-void rx_agc_cc::set_manual_gain(int gain)
+void rx_agc_ff::set_manual_gain(int gain)
 {
     if ((gain != d_manual_gain) && (gain >= 0) && (gain <= 100)) {
         boost::mutex::scoped_lock lock(d_mutex);
@@ -155,7 +155,7 @@ void rx_agc_cc::set_manual_gain(int gain)
  *
  * The slope factor specifies dB reduction in output at knee from maximum output level
  */
-void rx_agc_cc::set_slope(int slope)
+void rx_agc_ff::set_slope(int slope)
 {
     if ((slope != d_slope) && (slope >= 0) && (slope <= 10)) {
         boost::mutex::scoped_lock lock(d_mutex);
@@ -169,7 +169,7 @@ void rx_agc_cc::set_slope(int slope)
  * \brief Set AGC decay time.
  * \param decay The new AGC decay time between 20 to 5000 ms.
  */
-void rx_agc_cc::set_decay(int decay)
+void rx_agc_ff::set_decay(int decay)
 {
     if ((decay != d_decay) && (decay >= 20) && (decay <= 5000)) {
         boost::mutex::scoped_lock lock(d_mutex);
@@ -183,7 +183,7 @@ void rx_agc_cc::set_decay(int decay)
  * \brief Enable/disable AGC hang.
  * \param use_hang Whether to use hang or not.
  */
-void rx_agc_cc::set_use_hang(bool use_hang)
+void rx_agc_ff::set_use_hang(bool use_hang)
 {
     if (use_hang != d_use_hang) {
         boost::mutex::scoped_lock lock(d_mutex);

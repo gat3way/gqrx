@@ -47,11 +47,25 @@ bool receiver_base_cf::has_nb()
     return false;
 }
 
+bool receiver_base_cf::has_nr()
+{
+    return false;
+}
+
+
 void receiver_base_cf::set_nb_on(int nbid, bool on)
 {
     (void) nbid;
     (void) on;
 }
+
+void receiver_base_cf::set_nr_on(int nrid, bool on)
+{
+    (void) nrid;
+    (void) on;
+}
+
+
 
 void receiver_base_cf::set_nb_threshold(int nbid, float threshold)
 {
@@ -133,6 +147,12 @@ void receiver_base_cf::set_am_dcr(bool enabled)
 {
     (void) enabled;
 }
+
+void receiver_base_cf::set_am_sync(bool enabled)
+{
+    (void) enabled;
+}
+
 
 void receiver_base_cf::get_rds_data(std::string &outbuff, int &num)
 {

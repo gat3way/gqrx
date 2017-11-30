@@ -32,6 +32,9 @@ add_definitions(-D${BUILDTYPE})
 # We have some custom .cmake scripts not in the official distribution.
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
+# Optimize for speed
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+
 # Add valgrind build options if necessary
 if(${CMAKE_BUILD_TYPE} MATCHES "Valgrind")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")

@@ -49,11 +49,11 @@ resampler_cc::resampler_cc(float rate)
     */
 
     /* generate taps */
-    double cutoff = rate > 1.0 ? 0.4 : 0.4*rate;
-    double trans_width = rate > 1.0 ? 0.2 : 0.2*rate;
+    double cutoff = rate > 1.0 ? 0.4 : 0.4*rate; //0.4
+    double trans_width = rate > 1.0 ? 0.1 : 0.1*rate; //0.2
     unsigned int flt_size = 32;
 
-    d_taps = gr::filter::firdes::low_pass(flt_size, flt_size, cutoff, trans_width);
+    d_taps = gr::filter::firdes::low_pass_2(flt_size, flt_size, cutoff, trans_width, 90);
 
     /* create the filter */
     d_filter = gr::filter::pfb_arb_resampler_ccf::make(rate, d_taps, flt_size);

@@ -141,6 +141,9 @@ signals:
     /** Signal emitted when AM DCR status is toggled. */
     void amDcrToggled(bool enabled);
 
+    /** Signal emitted when AMS status is toggled. */
+    void amSyncToggled(bool enabled);
+
     /** Signal emitted when baseband gain has changed. Gain is in dB. */
     //void bbGainChanged(float gain);
 
@@ -175,6 +178,9 @@ signals:
     /** Signal emitted when noise blanker status has changed. */
     void noiseBlankerChanged(int nbid, bool on, float threshold);
 
+    /** Signal emitted when noise reduction status has changed. */
+    void noiseReductionChanged(int nbid, bool on);
+
     void cwOffsetChanged(int offset);
 
 private slots:
@@ -192,6 +198,8 @@ private slots:
     void on_nb1Button_toggled(bool checked);
     void on_nb2Button_toggled(bool checked);
     void on_nbOptButton_clicked();
+    void on_nr1Button_toggled(bool checked);
+    void on_nr2Button_toggled(bool checked);
 
     // Signals coming from noise blanker pop-up
     void nbOpt_thresholdChanged(int nbid, double value);
@@ -200,6 +208,7 @@ private slots:
     void demodOpt_fmMaxdevSelected(float max_dev);
     void demodOpt_fmEmphSelected(double tau);
     void demodOpt_amDcrToggled(bool enabled);
+    void demodOpt_amSyncToggled(bool enabled);
     void demodOpt_cwOffsetChanged(int offset);
 
     // Signals coming from AGC options popup

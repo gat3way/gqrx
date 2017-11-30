@@ -204,6 +204,7 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     connect(uiDockRxOpt, SIGNAL(fmMaxdevSelected(float)), this, SLOT(setFmMaxdev(float)));
     connect(uiDockRxOpt, SIGNAL(fmEmphSelected(double)), this, SLOT(setFmEmph(double)));
     connect(uiDockRxOpt, SIGNAL(amDcrToggled(bool)), this, SLOT(setAmDcr(bool)));
+    connect(uiDockRxOpt, SIGNAL(amSyncToggled(bool)), this, SLOT(setAmSync(bool)));
     connect(uiDockRxOpt, SIGNAL(cwOffsetChanged(int)), this, SLOT(setCwOffset(int)));
     connect(uiDockRxOpt, SIGNAL(agcToggled(bool)), this, SLOT(setAgcOn(bool)));
     connect(uiDockRxOpt, SIGNAL(agcHangToggled(bool)), this, SLOT(setAgcHang(bool)));
@@ -212,6 +213,7 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     connect(uiDockRxOpt, SIGNAL(agcGainChanged(int)), this, SLOT(setAgcGain(int)));
     connect(uiDockRxOpt, SIGNAL(agcDecayChanged(int)), this, SLOT(setAgcDecay(int)));
     connect(uiDockRxOpt, SIGNAL(noiseBlankerChanged(int,bool,float)), this, SLOT(setNoiseBlanker(int,bool,float)));
+    connect(uiDockRxOpt, SIGNAL(noiseReductionChanged(int,bool)), this, SLOT(setNoiseReduction(int,bool)));
     connect(uiDockRxOpt, SIGNAL(sqlLevelChanged(double)), this, SLOT(setSqlLevel(double)));
     connect(uiDockRxOpt, SIGNAL(sqlAutoClicked()), this, SLOT(setSqlLevelAuto()));
     connect(uiDockAudio, SIGNAL(audioGainChanged(float)), this, SLOT(setAudioGain(float)));
@@ -1146,6 +1148,16 @@ void MainWindow::setAmDcr(bool enabled)
     rx->set_am_dcr(enabled);
 }
 
+/**
+ * @brief AM Sync status changed (slot).
+ * @param enabled Whether AMS is enabled or not.
+ */
+void MainWindow::setAmSync(bool enabled)
+{
+    rx->set_am_sync(enabled);
+}
+
+
 void MainWindow::setCwOffset(int offset)
 {
     rx->set_cw_offset(offset);
@@ -1210,6 +1222,20 @@ void MainWindow::setNoiseBlanker(int nbid, bool on, float threshold)
     rx->set_nb_on(nbid, on);
     rx->set_nb_threshold(nbid, threshold);
 }
+
+
+/**
+ * @brief Noise reduction configuration changed.
+ * @param nb1 Noise reduction 1 ON/OFF.
+ * @param nb2 Noise reduction 2 ON/OFF.
+ * @param threshold Noise blanker threshold.
+ */
+void MainWindow::setNoiseReduction(int nrid, bool on)
+{
+    rx->set_nr_on(nrid, on);
+}
+
+
 
 /**
  * @brief Squelch level changed.

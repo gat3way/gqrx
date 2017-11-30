@@ -745,6 +745,16 @@ receiver::status receiver::set_nb_on(int nbid, bool on)
     return STATUS_OK; // FIXME
 }
 
+receiver::status receiver::set_nr_on(int nrid, bool on)
+{
+    if (rx->has_nr())
+        rx->set_nr_on(nrid, on);
+
+    return STATUS_OK; // FIXME
+}
+
+
+
 receiver::status receiver::set_nb_threshold(int nbid, float threshold)
 {
     if (rx->has_nb())
@@ -932,6 +942,16 @@ receiver::status receiver::set_am_dcr(bool enabled)
 
     return STATUS_OK;
 }
+
+
+receiver::status receiver::set_am_sync(bool enabled)
+{
+    if (rx->has_am())
+        rx->set_am_sync(enabled);
+
+    return STATUS_OK;
+}
+
 
 receiver::status receiver::set_af_gain(float gain_db)
 {

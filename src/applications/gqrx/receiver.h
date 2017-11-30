@@ -36,7 +36,7 @@
 
 #include "dsp/correct_iq_cc.h"
 #include "dsp/filter/fir_decim.h"
-#include "dsp/rx_noise_blanker_cc.h"
+#include "dsp/rx_noise_reduction_ff.h"
 #include "dsp/rx_filter.h"
 #include "dsp/rx_meter.h"
 #include "dsp/rx_agc_xx.h"
@@ -166,6 +166,7 @@ public:
 
     /* Noise blanker */
     status      set_nb_on(int nbid, bool on);
+    status      set_nr_on(int nrid, bool on);
     status      set_nb_threshold(int nbid, float threshold);
 
     /* Squelch parameter */
@@ -188,6 +189,7 @@ public:
 
     /* AM parameters */
     status      set_am_dcr(bool enabled);
+    status      set_am_sync(bool enabled);
 
     /* Audio parameters */
     status      set_af_gain(float gain_db);

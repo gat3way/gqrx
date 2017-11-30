@@ -28,13 +28,13 @@
 #include <boost/thread/mutex.hpp>
 #include <dsp/agc_impl.h>
 
-class rx_agc_cc;
+class rx_agc_ff;
 
-typedef boost::shared_ptr<rx_agc_cc> rx_agc_cc_sptr;
+typedef boost::shared_ptr<rx_agc_ff> rx_agc_ff_sptr;
 
 
 /**
- * \brief Return a shared_ptr to a new instance of rx_agc_cc.
+ * \brief Return a shared_ptr to a new instance of rx_agc_ff.
  * \param sample_rate The samle rate (default = 96000).
  * \param agc_on      Whether AGC should be ON (default = true).
  * \param threshold   AGC Knee in dB if AGC is active. Range -160 to 0 dB.
@@ -46,10 +46,10 @@ typedef boost::shared_ptr<rx_agc_cc> rx_agc_cc_sptr;
  * \param use_hang    Whether AGC should "hang" before starting to decay.
  *
  * This is effectively the public constructor for a new AGC block.
- * To avoid accidental use of raw pointers, the rx_agc_cc constructor is private.
- * make_rx_agc_cc is the public interface for creating new instances.
+ * To avoid accidental use of raw pointers, the rx_agc_ff constructor is private.
+ * make_rx_agc_ff is the public interface for creating new instances.
  */
-rx_agc_cc_sptr make_rx_agc_cc(double sample_rate, bool agc_on, int threshold,
+rx_agc_ff_sptr make_rx_agc_ff(double sample_rate, bool agc_on, int threshold,
                               int manual_gain, int slope, int decay,
                               bool use_hang);
 
@@ -60,18 +60,18 @@ rx_agc_cc_sptr make_rx_agc_cc(double sample_rate, bool agc_on, int threshold,
  * This block performs automatic gain control.
  * To be written...
  */
-class rx_agc_cc : public gr::sync_block
+class rx_agc_ff : public gr::sync_block
 {
-    friend rx_agc_cc_sptr make_rx_agc_cc(double sample_rate, bool agc_on,
+    friend rx_agc_ff_sptr make_rx_agc_ff(double sample_rate, bool agc_on,
                                          int threshold, int manual_gain,
                                          int slope, int decay, bool use_hang);
 
 protected:
-    rx_agc_cc(double sample_rate, bool agc_on, int threshold, int manual_gain,
+    rx_agc_ff(double sample_rate, bool agc_on, int threshold, int manual_gain,
               int slope, int decay, bool use_hang);
 
 public:
-    ~rx_agc_cc();
+    ~rx_agc_ff();
 
     int work(int noutput_items,
              gr_vector_const_void_star &input_items,

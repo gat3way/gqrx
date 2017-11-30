@@ -38,6 +38,8 @@ add_source_files(SRCS_LIST
 	rx_filter.h
 	rx_meter.cpp
 	rx_meter.h
+	rx_noise_reduction_ff.cpp
+	rx_noise_reduction_ff.h
 	rx_noise_blanker_cc.cpp
 	rx_noise_blanker_cc.h
 	rx_rds.cpp

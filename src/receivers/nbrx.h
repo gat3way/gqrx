@@ -23,11 +23,12 @@
 #ifndef NBRX_H
 #define NBRX_H
 
-#include <gnuradio/analog/simple_squelch_cc.h>
+#include <gnuradio/analog/pwr_squelch_cc.h>
 #include <gnuradio/basic_block.h>
 #include <gnuradio/blocks/complex_to_float.h>
 #include <gnuradio/blocks/complex_to_real.h>
 #include "receivers/receiver_base.h"
+#include "dsp/rx_noise_reduction_ff.h"
 #include "dsp/rx_noise_blanker_cc.h"
 #include "dsp/rx_filter.h"
 #include "dsp/rx_meter.h"
@@ -79,7 +80,9 @@ public:
 
     /* Noise blanker */
     bool has_nb() { return true; }
+    bool has_nr() { return true; }
     void set_nb_on(int nbid, bool on);
+    void set_nr_on(int nbid, bool on);
     void set_nb_threshold(int nbid, float threshold);
 
     /* Squelch parameter */
@@ -106,6 +109,7 @@ public:
     /* AM parameters */
     bool has_am() { return true; }
     void set_am_dcr(bool enabled);
+    void set_am_sync(bool enabled);
 
 private:
     bool   d_running;          /*!< Whether receiver is running or not. */
@@ -117,10 +121,11 @@ private:
     resampler_cc_sptr         iq_resamp;   /*!< Baseband resampler. */
     rx_filter_sptr            filter;  /*!< Non-translating bandpass filter.*/
 
+    rx_nb_ff_sptr             nr;         /*!< Noise blanker. */
     rx_nb_cc_sptr             nb;         /*!< Noise blanker. */
     rx_meter_c_sptr           meter;      /*!< Signal strength. */
-    rx_agc_cc_sptr            agc;        /*!< Receiver AGC. */
-    gr::analog::simple_squelch_cc::sptr sql;        /*!< Squelch. */
+    rx_agc_ff_sptr            agc;        /*!< Receiver AGC. */
+    gr::analog::pwr_squelch_cc::sptr sql;        /*!< Squelch. */
     gr::blocks::complex_to_float::sptr  demod_raw;  /*!< Raw I/Q passthrough. */
     gr::blocks::complex_to_real::sptr   demod_ssb;  /*!< SSB demodulator. */
 

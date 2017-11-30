@@ -149,6 +149,7 @@ private slots:
     void setFmMaxdev(float max_dev);
     void setFmEmph(double tau);
     void setAmDcr(bool enabled);
+    void setAmSync(bool enabled);
     void setCwOffset(int offset);
     void setAgcOn(bool agc_on);
     void setAgcHang(bool use_hang);
@@ -157,6 +158,7 @@ private slots:
     void setAgcDecay(int msec);
     void setAgcGain(int gain);
     void setNoiseBlanker(int nbid, bool on, float threshold);
+    void setNoiseReduction(int rbid, bool on);
     void setSqlLevel(double level_db);
     double setSqlLevelAuto();
     void setAudioGain(float gain);

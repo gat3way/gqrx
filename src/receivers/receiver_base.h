@@ -65,8 +65,10 @@ public:
 
     /* Noise blanker */
     virtual bool has_nb();
+    virtual bool has_nr();
     virtual void set_nb_on(int nbid, bool on);
     virtual void set_nb_threshold(int nbid, float threshold);
+    virtual void set_nr_on(int nrid, bool on);
 
     /* Squelch parameter */
     virtual bool has_sql();
@@ -90,6 +92,7 @@ public:
     /* AM parameters */
     virtual bool has_am();
     virtual void set_am_dcr(bool enabled);
+    virtual void set_am_sync(bool enabled);
 
     virtual void get_rds_data(std::string &outbuff, int &num);
     virtual void start_rds_decoder();

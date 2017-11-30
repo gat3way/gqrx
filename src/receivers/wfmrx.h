@@ -26,7 +26,7 @@
 
 #include <gnuradio/analog/simple_squelch_cc.h>
 #include "receivers/receiver_base.h"
-#include "dsp/rx_noise_blanker_cc.h"
+#include "dsp/rx_noise_reduction_ff.h"
 #include "dsp/rx_filter.h"
 #include "dsp/rx_meter.h"
 #include "dsp/rx_demod_fm.h"

@@ -101,6 +101,7 @@ DockRxOpt::DockRxOpt(qint64 filterOffsetRange, QWidget *parent) :
     connect(demodOpt, SIGNAL(fmMaxdevSelected(float)), this, SLOT(demodOpt_fmMaxdevSelected(float)));
     connect(demodOpt, SIGNAL(fmEmphSelected(double)), this, SLOT(demodOpt_fmEmphSelected(double)));
     connect(demodOpt, SIGNAL(amDcrToggled(bool)), this, SLOT(demodOpt_amDcrToggled(bool)));
+    connect(demodOpt, SIGNAL(amSyncToggled(bool)), this, SLOT(demodOpt_amSyncToggled(bool)));
     connect(demodOpt, SIGNAL(cwOffsetChanged(int)), this, SLOT(demodOpt_cwOffsetChanged(int)));
 
     // AGC options dialog
@@ -686,6 +687,17 @@ void DockRxOpt::demodOpt_amDcrToggled(bool enabled)
     emit amDcrToggled(enabled);
 }
 
+
+/**
+ * @brief AM Sync toggled by user.
+ * @param enabled Whether AMS is enabled or not.
+ */
+void DockRxOpt::demodOpt_amSyncToggled(bool enabled)
+{
+    emit amSyncToggled(enabled);
+}
+
+
 void DockRxOpt::demodOpt_cwOffsetChanged(int offset)
 {
     emit cwOffsetChanged(offset);
@@ -716,6 +728,21 @@ void DockRxOpt::on_nbOptButton_clicked()
 {
     nbOpt->show();
 }
+
+
+/** Noise reduction 1 button has been toggled. */
+void DockRxOpt::on_nr1Button_toggled(bool checked)
+{
+    emit noiseReductionChanged(1, checked);
+}
+
+/** Noise recuction 2 button has been toggled. */
+void DockRxOpt::on_nr2Button_toggled(bool checked)
+{
+    emit noiseReductionChanged(2, checked);
+}
+
+
 
 int DockRxOpt::GetEnumForModulationString(QString param)
 {
