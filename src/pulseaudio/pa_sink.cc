@@ -58,6 +58,7 @@ pa_sink::pa_sink(const string device_name, int audio_rate,
     d_ss.format = PA_SAMPLE_FLOAT32LE;
     d_ss.rate = audio_rate;
     d_ss.channels = 2;
+
     d_pasink = pa_simple_new(NULL,
                              d_app_name.c_str(),
                              PA_STREAM_PLAYBACK,

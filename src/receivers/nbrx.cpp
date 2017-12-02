@@ -40,7 +40,7 @@ nbrx::nbrx(float quad_rate, float audio_rate)
       d_demod(NBRX_DEMOD_FM)
 {
     iq_resamp = make_resampler_cc(PREF_QUAD_RATE/d_quad_rate);
-    nr = make_rx_nb_ff(PREF_QUAD_RATE, 3.3, 2.5);
+    nr = make_rx_nb_ff(PREF_QUAD_RATE);
     nb = make_rx_nb_cc(PREF_QUAD_RATE, 3.3, 2.5);
     filter = make_rx_filter(PREF_QUAD_RATE, -5000.0, 5000.0, 1000.0);
     agc = make_rx_agc_ff(PREF_QUAD_RATE, true, -100, 0, 0, 500, false);

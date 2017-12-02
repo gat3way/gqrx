@@ -214,11 +214,19 @@
     <addaction name="separator"/>
     <addaction name="actionIqTool"/>
     <addaction name="separator"/>
-    <addaction name="actionAFSK1200"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menu_Decoders">
+    <property name="title">
+     <string>&amp;Decoders</string>
+    </property>
+    <addaction name="actionAFSK1200"/>
+    <addaction name="actionALE"/>
+   </widget>
+
    <addaction name="menu_File"/>
    <addaction name="menu_Tools"/>
+   <addaction name="menu_Decoders"/>
    <addaction name="menu_View"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -307,6 +315,14 @@
    </property>
    <property name="toolTip">
     <string>Start AFSK1200 decoder</string>
+   </property>
+  </action>
+  <action name="actionALE">
+   <property name="text">
+    <string>ALE (MIL-STD 188-141A) Decoder</string>
+   </property>
+   <property name="toolTip">
+    <string>Start ALE decoder</string>
    </property>
   </action>
   <action name="actionSched">

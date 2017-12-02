@@ -64,7 +64,8 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     d_lnb_lo(0),
     d_hw_freq(0),
     d_have_audio(true),
-    dec_afsk1200(0)
+    dec_afsk1200(0),
+    dec_ale(0)
 {
     ui->setupUi(this);
     Bookmarks::create();
@@ -2042,6 +2043,64 @@ void MainWindow::afsk1200win_closed()
 
 
 /**
+ * ALE decoder action triggered.
+ *
+ * This slot is called when the user activates the AFSK1200
+ * action. It will create an AFSK1200 decoder window and start
+ * and start pushing data from the receiver to it.
+ */
+void MainWindow::on_actionALE_triggered()
+{
+
+    if (dec_ale != 0)
+    {
+        qDebug() << "ALE decoder already active.";
+        dec_ale->raise();
+    }
+    else
+    {
+        qDebug() << "Starting ALE decoder.";
+
+        /* start sample sniffer */
+        if (rx->start_sniffer(8000, DATA_BUFFER_SIZE) == receiver::STATUS_OK)
+        {
+            dec_ale = new AleWin(this);
+            connect(dec_ale, SIGNAL(windowClosed()), this, SLOT(alewin_closed()));
+            dec_ale->show();
+
+            dec_timer->start(100);
+        }
+        else
+            QMessageBox::warning(this, tr("Gqrx error"),
+                                 tr("Error starting sample sniffer.\n"
+                                    "Close all data decoders and try again."),
+                                 QMessageBox::Ok, QMessageBox::Ok);
+    }
+}
+
+
+/**
+ * Destroy ALE decoder window got closed.
+ *
+ * This slot is connected to the windowClosed() signal of the AFSK1200 decoder
+ * object. We need this to properly destroy the object, stop timeout and clean
+ * up whatever need to be cleaned up.
+ */
+void MainWindow::alewin_closed()
+{
+    /* stop cyclic processing */
+    dec_timer->stop();
+    rx->stop_sniffer();
+
+    /* delete decoder object */
+    delete dec_ale;
+    dec_ale = 0;
+}
+
+
+
+
+/**
  * Cyclic processing for acquiring samples from receiver and processing them
  * with data decoders (see dec_* objects)
  */
@@ -2053,6 +2112,8 @@ void MainWindow::decoderTimeout()
     rx->get_sniffer_data(&buffer[0], num);
     if (dec_afsk1200)
         dec_afsk1200->process_samples(&buffer[0], num);
+    if (dec_ale)
+        dec_ale->process_samples(&buffer[0], num);
 }
 
 void MainWindow::setRdsDecoder(bool checked)

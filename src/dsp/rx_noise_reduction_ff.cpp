@@ -3,8 +3,10 @@
  * Gqrx SDR: Software defined radio receiver powered by GNU Radio and Qt
  *           http://gqrx.dk/
  *
+ * Significant portions of the code were used from the wdsp project
+ * Copyright (C) 2013, 2014 Warren Pratt, NR0V
+ *
  * Copyright 2011-2012 Alexandru Csete OZ9AEC.
- * Copyright 2004-2008 by Frank Brickle, AB2KT and Bob McGwier, N4HY
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +37,9 @@ void rx_nb_ff::forecast (int noutput_items, gr_vector_int &ninput_items_required
 }
 
 
-rx_nb_ff_sptr make_rx_nb_ff(double sample_rate, float thld1, float thld2)
+rx_nb_ff_sptr make_rx_nb_ff(double sample_rate)
 {
-    return gnuradio::get_initial_sptr(new rx_nb_ff(sample_rate, thld1, thld2));
+    return gnuradio::get_initial_sptr(new rx_nb_ff(sample_rate));
 }
 
 
@@ -45,23 +47,14 @@ rx_nb_ff_sptr make_rx_nb_ff(double sample_rate, float thld1, float thld2)
  *
  * Use make_rx_nb_ff() instead.
  */
-rx_nb_ff::rx_nb_ff(double sample_rate, float thld1, float thld2)
+rx_nb_ff::rx_nb_ff(double sample_rate)
     : gr::sync_block ("rx_nb_ff",
           gr::io_signature::make(1, 1, sizeof(float)),
           gr::io_signature::make(1, 1, sizeof(float))),
       d_nb1_on(false),
       d_nb2_on(false),
-      d_sample_rate(sample_rate),
-      d_thld_nb1(thld1),
-      d_thld_nb2(thld2),
-      d_avgmag_nb1(1.0),
-      d_avgmag_nb2(1.0),
-      d_delidx(2),
-      d_sigidx(0),
-      d_hangtime(0)
+      d_sample_rate(sample_rate)
 {
-    memset(d_delay, 0, 8 * sizeof(gr_complex));
-
 
     // Init nb1 params
     d_nb1_dline_size = 2048;
@@ -647,7 +640,7 @@ double e1xb (double x)
  */
 void rx_nb_ff::process_nb2(float *buf, int num)
 {
-        double gamma, eps_hat, eps_p,v, ehr;
+        double gamma, eps_hat, eps_p;
         int i, j, k, sbuff, sbegin;
         double g1;
         double f0, f1, f2, f3;
@@ -801,64 +794,9 @@ void rx_nb_ff::process_nb2(float *buf, int num)
             memcpy (d_nb2_np.lambda_d, d_nb2_np.sigma2N, d_nb2_np.msize * sizeof (double));
 
             // End LambdaD
-            // LambdaDS
-            /*
-            for (k = 0; k < d_nb2_nps.msize; k++)
-            {
-                d_nb2_nps.PH1y[k] = 1.0 / (1.0 + (1.0 + d_nb2_nps.epsH1) * exp (- d_nb2_nps.epsH1r * d_nb2_nps.lambda_y[k] / d_nb2_nps.sigma2N[k]));
-                d_nb2_nps.Pbar[k] = d_nb2_nps.alpha_Pbar * d_nb2_nps.Pbar[k] + (1.0 - d_nb2_nps.alpha_Pbar) * d_nb2_nps.PH1y[k];
-                if (d_nb2_nps.Pbar[k] > 0.99)
-                    d_nb2_nps.PH1y[k] = std::min (d_nb2_nps.PH1y[k], 0.99);
-                d_nb2_nps.EN2y[k] = (1.0 - d_nb2_nps.PH1y[k]) * d_nb2_nps.lambda_y[k] + d_nb2_nps.PH1y[k] * d_nb2_nps.sigma2N[k];
-                d_nb2_nps.sigma2N[k] = d_nb2_nps.alpha_pow * d_nb2_nps.sigma2N[k] + (1.0 - d_nb2_nps.alpha_pow) * d_nb2_nps.EN2y[k];
-            }
-            memcpy (d_nb2_nps.lambda_d, d_nb2_nps.sigma2N, d_nb2_nps.msize * sizeof (double));
-            */
-            //End LambdaDS
-
-            // gain mode 0 
-            /*
-            double v;
-            for (k = 0; k < d_nb2_msize; k++)
-            {
-                gamma = std::min (d_nb2_g.lambda_y[k] / d_nb2_g.lambda_d[k], d_nb2_g.gamma_max);
-                eps_hat = d_nb2_g.alpha * d_nb2_g.prev_mask[k] * d_nb2_g.prev_mask[k] * d_nb2_g.prev_gamma[k]
-                    + (1.0 - d_nb2_g.alpha) * std::max (gamma - 1.0, d_nb2_g.eps_floor);
-                v = (eps_hat / (1.0 + eps_hat)) * gamma;
-                d_nb2_g.mask[k] = d_nb2_g.gf1p5 * sqrt (v) / gamma * exp (- 0.5 * v)
-                    * ((1.0 + v) * bessI0 (0.5 * v) + v * bessI1 (0.5 * v));
-                {
-                    double v2 = std::min (v, 700.0);
-                    double eta = d_nb2_g.mask[k] * d_nb2_g.mask[k] * d_nb2_g.lambda_y[k] / d_nb2_g.lambda_d[k];
-                    double eps = eta / (1.0 - d_nb2_g.q);
-                    double witchHat = (1.0 - d_nb2_g.q) / d_nb2_g.q * exp (v2) / (1.0 + eps);
-                    d_nb2_g.mask[k] *= witchHat / (1.0 + witchHat);
-                }
-                if (d_nb2_g.mask[k] > d_nb2_g.gmax) d_nb2_g.mask[k] = d_nb2_g.gmax;
-                if (d_nb2_g.mask[k] != d_nb2_g.mask[k]) d_nb2_g.mask[k] = 0.01;
-                d_nb2_g.prev_gamma[k] = gamma;
-                d_nb2_g.prev_mask[k] = d_nb2_g.mask[k] * 0.3;
-            }
-            */
-            // gain mode 1
-            /*
-            double gamma, eps_hat, v, ehr;
-            for (k = 0; k < d_nb2_g.msize; k++)
-            {
-                gamma = std::min (d_nb2_g.lambda_y[k] / d_nb2_g.lambda_d[k], d_nb2_g.gamma_max);
-                eps_hat = d_nb2_g.alpha * d_nb2_g.prev_mask[k] * d_nb2_g.prev_mask[k] * d_nb2_g.prev_gamma[k]
-                    + (1.0 - d_nb2_g.alpha) * std::max (gamma - 1.0, d_nb2_g.eps_floor);
-                ehr = eps_hat / (1.0 + eps_hat);
-                v = ehr * gamma;
-                if((d_nb2_g.mask[k] = ehr * exp (std::min (700.0, 0.5 * e1xb(v)))) > d_nb2_g.gmax) d_nb2_g.mask[k] = d_nb2_g.gmax;
-                if (d_nb2_g.mask[k] != d_nb2_g.mask[k])d_nb2_g.mask[k] = 0.01;
-                d_nb2_g.prev_gamma[k] = gamma;
-                d_nb2_g.prev_mask[k] = d_nb2_g.mask[k];
-            }
-            */
 
             // begin mode 2
-            
+
             for (k = 0; k < d_nb2_msize; k++)
             {
                 gamma = std::min(d_nb2_g.lambda_y[k] / d_nb2_g.lambda_d[k], d_nb2_g.gamma_max);
@@ -871,7 +809,7 @@ void rx_nb_ff::process_nb2(float *buf, int num)
                 if (d_nb2_g.prev_mask[k] < 1)
                     d_nb2_g.prev_mask[k] = 0;
             }
-            
+
 
             // aepf
             sumPre = 0.0;
@@ -937,14 +875,3 @@ void rx_nb_ff::process_nb2(float *buf, int num)
 
 }
 
-void rx_nb_ff::set_threshold1(float threshold)
-{
-    if ((threshold >= 1.0) && (threshold <= 20.0))
-        d_thld_nb1 = threshold;
-}
-
-void rx_nb_ff::set_threshold2(float threshold)
-{
-    if ((threshold >= 0.0) && (threshold <= 15.0))
-        d_thld_nb2 = threshold;
-}

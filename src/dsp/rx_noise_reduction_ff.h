@@ -40,7 +40,7 @@ typedef boost::shared_ptr<rx_nb_ff> rx_nb_ff_sptr;
  * To avoid accidental use of raw pointers, the rx_nb_ff constructor is private.
  * make_rx_nb_ff is the public interface for creating new instances.
  */
-rx_nb_ff_sptr make_rx_nb_ff(double sample_rate=96000.0, float thld1=3.3, float thld2=2.5);
+rx_nb_ff_sptr make_rx_nb_ff(double sample_rate=96000.0);
 
 
 /*! \brief Noise reduction block.
@@ -53,10 +53,10 @@ rx_nb_ff_sptr make_rx_nb_ff(double sample_rate=96000.0, float thld1=3.3, float t
  */
 class rx_nb_ff : public gr::sync_block
 {
-    friend rx_nb_ff_sptr make_rx_nb_ff(double sample_rate, float thld1, float thld2);
+    friend rx_nb_ff_sptr make_rx_nb_ff(double sample_rate);
 
 protected:
-    rx_nb_ff(double sample_rate, float thld1, float thld2);
+    rx_nb_ff(double sample_rate);
 
 public:
     ~rx_nb_ff();
@@ -91,8 +91,6 @@ public:
 
     bool get_nr1_on() { return d_nb1_on; }
     bool get_nr2_on() { return d_nb2_on; }
-    void set_threshold1(float threshold);
-    void set_threshold2(float threshold);
 
 private:
     void process_nb1(float *buf, int num);
@@ -107,12 +105,6 @@ private:
     bool   d_nb1_on;        /*! Current NB1 status (true/false). */
     bool   d_nb2_on;        /*! Current NB2 status (true/false). */
     double d_sample_rate;   /*! Current sample rate. */
-    float  d_thld_nb1;      /*! Current threshold for noise reduction 1. */
-    float  d_thld_nb2;      /*! Current threshold for noise reduction 2. */
-    float  d_avgmag_nb1;    /*! Average magnitude. */
-    float  d_avgmag_nb2;    /*! Average magnitude. */
-    gr_complex d_avgsig, d_delay[8];
-    int    d_delidx, d_sigidx, d_hangtime;   // FIXME: need longer buffer for higher sampel rates?
     int    d_nb1_state;
     int    d_nb2_state;
 
