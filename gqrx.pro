@@ -93,8 +93,9 @@ SOURCES += \
     src/applications/gqrx/file_resources.cpp \
     src/applications/gqrx/remote_control.cpp \
     src/applications/gqrx/remote_control_settings.cpp \
-    src/dsp/afsk1200/cafsk12.cpp \
     src/dsp/ale/cale.cpp \
+    src/dsp/cw/ccw.cpp \
+    src/dsp/afsk1200/cafsk12.cpp \
     src/dsp/afsk1200/costabf.c \
     src/dsp/agc_impl.cpp \
     src/dsp/correct_iq_cc.cpp \
@@ -116,6 +117,7 @@ SOURCES += \
     src/interfaces/udp_sink_f.cpp \
     src/qtgui/afsk1200win.cpp \
     src/qtgui/alewin.cpp \
+    src/qtgui/cwwin.cpp \
     src/qtgui/agc_options.cpp \
     src/qtgui/audio_options.cpp \
     src/qtgui/bookmarks.cpp \
@@ -148,6 +150,7 @@ HEADERS += \
     src/applications/gqrx/remote_control_settings.h \
     src/dsp/afsk1200/cafsk12.h \
     src/dsp/ale/cale.h \
+    src/dsp/cw/ccw.h \
     src/dsp/afsk1200/filter.h \
     src/dsp/afsk1200/filter-i386.h \
     src/dsp/agc_impl.h \
@@ -175,6 +178,7 @@ HEADERS += \
     src/interfaces/udp_sink_f.h \
     src/qtgui/afsk1200win.h \
     src/qtgui/alewin.h \
+    src/qtgui/cwwin.h \
     src/qtgui/agc_options.h \
     src/qtgui/audio_options.h \
     src/qtgui/bookmarks.h \
@@ -205,6 +209,7 @@ FORMS += \
     src/applications/gqrx/remote_control_settings.ui \
     src/qtgui/afsk1200win.ui \
     src/qtgui/alewin.ui \
+    src/qtgui/cwwin.ui \
     src/qtgui/agc_options.ui \
     src/qtgui/audio_options.ui \
     src/qtgui/demod_options.ui \

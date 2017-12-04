@@ -65,7 +65,8 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     d_hw_freq(0),
     d_have_audio(true),
     dec_afsk1200(0),
-    dec_ale(0)
+    dec_ale(0),
+    dec_cw(0)
 {
     ui->setupUi(this);
     Bookmarks::create();
@@ -2045,8 +2046,8 @@ void MainWindow::afsk1200win_closed()
 /**
  * ALE decoder action triggered.
  *
- * This slot is called when the user activates the AFSK1200
- * action. It will create an AFSK1200 decoder window and start
+ * This slot is called when the user activates the ALE
+ * action. It will create an ALE decoder window and start
  * and start pushing data from the receiver to it.
  */
 void MainWindow::on_actionALE_triggered()
@@ -2082,7 +2083,7 @@ void MainWindow::on_actionALE_triggered()
 /**
  * Destroy ALE decoder window got closed.
  *
- * This slot is connected to the windowClosed() signal of the AFSK1200 decoder
+ * This slot is connected to the windowClosed() signal of the ALE decoder
  * object. We need this to properly destroy the object, stop timeout and clean
  * up whatever need to be cleaned up.
  */
@@ -2096,6 +2097,64 @@ void MainWindow::alewin_closed()
     delete dec_ale;
     dec_ale = 0;
 }
+
+
+/**
+ * CW decoder action triggered.
+ *
+ * This slot is called when the user activates the CW
+ * action. It will create an CW decoder window and start
+ * and start pushing data from the receiver to it.
+ */
+void MainWindow::on_actionCW_triggered()
+{
+
+    if (dec_cw != 0)
+    {
+        qDebug() << "CW decoder already active.";
+        dec_cw->raise();
+    }
+    else
+    {
+        qDebug() << "Starting CW decoder.";
+
+        /* start sample sniffer */
+        if (rx->start_sniffer(48000, DATA_BUFFER_SIZE) == receiver::STATUS_OK)
+        {
+            dec_cw = new CwWin(this);
+            connect(dec_cw, SIGNAL(windowClosed()), this, SLOT(cwwin_closed()));
+            dec_cw->show();
+
+            dec_timer->start(100);
+        }
+        else
+            QMessageBox::warning(this, tr("Gqrx error"),
+                                 tr("Error starting sample sniffer.\n"
+                                    "Close all data decoders and try again."),
+                                 QMessageBox::Ok, QMessageBox::Ok);
+    }
+}
+
+
+/**
+ * Destroy ALE decoder window got closed.
+ *
+ * This slot is connected to the windowClosed() signal of the AFSK1200 decoder
+ * object. We need this to properly destroy the object, stop timeout and clean
+ * up whatever need to be cleaned up.
+ */
+void MainWindow::cwwin_closed()
+{
+    /* stop cyclic processing */
+    dec_timer->stop();
+    rx->stop_sniffer();
+
+    /* delete decoder object */
+    delete dec_cw;
+    dec_cw = 0;
+}
+
+
 
 
 
@@ -2112,8 +2171,11 @@ void MainWindow::decoderTimeout()
     rx->get_sniffer_data(&buffer[0], num);
     if (dec_afsk1200)
         dec_afsk1200->process_samples(&buffer[0], num);
-    if (dec_ale)
+    else if (dec_ale)
         dec_ale->process_samples(&buffer[0], num);
+    else if (dec_cw)
+        dec_cw->process_samples(&buffer[0], num);
+
 }
 
 void MainWindow::setRdsDecoder(bool checked)

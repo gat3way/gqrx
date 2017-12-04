@@ -1,6 +1,12 @@
 /*
  *      cale.cpp -- ALE demodulator class
  *
+ *      Based on gr-ale which is based on LinuxALE project
+ *      Copyright (C):
+ *
+ *      Ivan Artner
+ *      Ilkka Toivanen
+ *      Glenn Valenta
  *
  *      Copyright (C) 2011 Alexandru Csete (oz9aec at gmail.com)
  *

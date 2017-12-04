@@ -222,6 +222,7 @@
     </property>
     <addaction name="actionAFSK1200"/>
     <addaction name="actionALE"/>
+    <addaction name="actionCW"/>
    </widget>
 
    <addaction name="menu_File"/>
@@ -323,6 +324,14 @@
    </property>
    <property name="toolTip">
     <string>Start ALE decoder</string>
+   </property>
+  </action>
+  <action name="actionCW">
+   <property name="text">
+    <string>CW Decoder</string>
+   </property>
+   <property name="toolTip">
+    <string>Start CW decoder</string>
    </property>
   </action>
   <action name="actionSched">

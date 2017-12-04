@@ -5,6 +5,8 @@ add_source_files(SRCS_LIST
 	afsk1200win.h
 	alewin.cpp
 	alewin.h
+	cwwin.cpp
+	cwwin.h
 	agc_options.cpp
 	agc_options.h
 	audio_options.cpp
@@ -53,6 +55,7 @@ add_source_files(SRCS_LIST
 add_source_files(UI_SRCS_LIST
 	afsk1200win.ui
 	alewin.ui
+	cwwin.ui
 	agc_options.ui
 	audio_options.ui
 	demod_options.ui

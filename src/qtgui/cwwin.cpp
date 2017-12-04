@@ -25,13 +25,13 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
-#include "alewin.h"
-#include "ui_alewin.h"
+#include "cwwin.h"
+#include "ui_cwwin.h"
 
 
-AleWin::AleWin(QWidget *parent) :
+CwWin::CwWin(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::AleWin)
+    ui(new Ui::CwWin)
 {
     ui->setupUi(this);
 
@@ -48,16 +48,17 @@ AleWin::AleWin(QWidget *parent) :
     ui->toolBar->addWidget(spacer);
     ui->toolBar->addAction(ui->actionInfo);
 
-    /* ALE decoder */
-    decoder = new CAle(this);
+    /* CW decoder */
+    decoder = new CCw(this);
 
-    connect(decoder, SIGNAL(newMessage(QString)), ui->textView, SLOT(appendPlainText(QString)));
-
+    connect(decoder, SIGNAL(newMessage(QString)), ui->textView, SLOT(insertPlainText(QString)));
+    //connect(decoder, SIGNAL(prevMessage(QTextCursor::MoveOperation,QTextCursor::MoveMode)), ui->textView, SLOT(moveCursor(QTextCursor::MoveOperation,QTextCursor::MoveMode)));
+    connect(decoder, SIGNAL(updateWPM(QString)), ui->wpmLabel, SLOT(setText(QString)));
 }
 
-AleWin::~AleWin()
+CwWin::~CwWin()
 {
-    qDebug() << "ALE decoder destroyed.";
+    qDebug() << "CW decoder destroyed.";
 
     delete decoder;
     delete ui;
@@ -65,7 +66,7 @@ AleWin::~AleWin()
 
 
 /*! \brief Process new set of samples. */
-void AleWin::process_samples(float *buffer, int length)
+void CwWin::process_samples(float *buffer, int length)
 {
     int overlap = 18;
     int i;
@@ -86,7 +87,7 @@ void AleWin::process_samples(float *buffer, int length)
 
 
 /*! \brief Catch window close events and emit signal so that main application can destroy us. */
-void AleWin::closeEvent(QCloseEvent *ev)
+void CwWin::closeEvent(QCloseEvent *ev)
 {
     Q_UNUSED(ev);
 
@@ -95,14 +96,14 @@ void AleWin::closeEvent(QCloseEvent *ev)
 
 
 /*! \brief User clicked on the Clear button. */
-void AleWin::on_actionClear_triggered()
+void CwWin::on_actionClear_triggered()
 {
     ui->textView->clear();
 }
 
 
 /*! \brief User clicked on the Save button. */
-void AleWin::on_actionSave_triggered()
+void CwWin::on_actionSave_triggered()
 {
     /* empty text view has blockCount = 1 */
     if (ui->textView->blockCount() < 2) {
@@ -133,13 +134,33 @@ void AleWin::on_actionSave_triggered()
 
 
 /*! \brief User clicked Info button. */
-void AleWin::on_actionInfo_triggered()
+void CwWin::on_actionInfo_triggered()
 {
-    QMessageBox::about(this, tr("About ALE Decoder"),
-                       tr("<p>Gqrx ALE Decoder %1</p>"
-                          "<p>The Gqrx ALE decoder taps directly into the SDR signal path "
+    QMessageBox::about(this, tr("About CW Decoder"),
+                       tr("<p>Gqrx CW Decoder %1</p>"
+                          "<p>The Gqrx CW decoder taps directly into the SDR signal path "
                           "eliminating the need to mess with virtual or real audio cables. "
-                          "It can decode MIL-STD 188-141A packets and displays the decoded packets in a text view.</p>"
+                          "It can decode CW (Morse Code)and displays the decoded characters in a text view.</p>"
                           ).arg(VERSION));
 
 }
+
+
+void CwWin::on_actionLeft_triggered()
+{
+    decoder->decWPM();
+    int wpm = decoder->getWPM();
+    QString str = "WPM: " + QString::number(wpm);
+    ui->wpmLabel->setText(str);
+}
+
+void CwWin::on_actionRight_triggered()
+{
+    decoder->incWPM();
+    int wpm = decoder->getWPM();
+    QString str = "WPM: " + QString::number(wpm);
+    ui->wpmLabel->setText(str);
+}
+
+void CwWin::none()
+{}
