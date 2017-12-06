@@ -69,8 +69,8 @@
 
 #define ENTER_DOT               0x01
 
-static int verbose_level = 2;
-
+static int verbose_level = 10;
+static bool first = true;
 
 
 CCw::CCw(QObject *parent) :
@@ -125,6 +125,71 @@ int CCw::getWPM()
     return rc_data.speed_wpm;
 }
 
+
+void CCw::change_freq(int freq)
+{
+    int idx;
+
+    rc_data.min_unit = 60;
+    rc_data.max_unit = 6;
+
+    rc_data.tone_freq = freq;
+    rc_data.unit_elem = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.speed_wpm);
+    Flags |= ADAPT_SPEED;
+    rc_data.max_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.max_unit);
+    rc_data.max_unit_x2 = rc_data.max_unit * 2;
+    rc_data.min_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.min_unit);
+
+    double w = 2.0 * M_PI * (double)rc_data.tone_freq / (double)rc_data.dsp_rate;
+    detector_data.cosw  = cos(w);
+    detector_data.sinw  = sin(w);
+    detector_data.coeff = 2.0 * detector_data.cosw;
+    detector_data.frag_len = (rc_data.dsp_rate * CYCLES_PER_FRAG) / rc_data.tone_freq;
+    detector_data.samples_buff_len = (CYCLES_PER_FRAG * rc_data.max_unit * rc_data.dsp_rate) / rc_data.tone_freq;
+
+
+
+    detector_data.samples_buff_idx = 0;
+    detector_data.sig_level_idx = 0;
+    detector_data.state_idx = 0;
+
+    if (detector_data.samples_buff)
+        for( idx = 0; idx < detector_data.samples_buff_len; idx++ )
+            detector_data.samples_buff[idx] = 0;
+    if (detector_data.sig_level_buff)
+        for( idx = 0; idx < rc_data.max_unit_x2; idx++ )
+            detector_data.sig_level_buff[idx] = 0;
+    if (detector_data.state)
+        for( idx = 0; idx < rc_data.max_unit; idx++ )
+            detector_data.state[idx] = 0;
+
+    space_elem_cnt = 0;
+    space_frag_cnt = 0;
+    mark_elem_cnt  = 0;
+    mark_frag_cnt  = 0;
+    Flags = 0;
+    Flags |= ADAPT_SPEED;
+    mark_cnt  = 0;
+    space_cnt = 0;
+    hex_code  = ENTER_DOT;
+    state = 0;
+    context = NO_CONTEXT;
+}
+
+void CCw::change_wpm(int wpm)
+{
+    rc_data.speed_wpm = wpm;
+    rc_data.min_unit = 40;
+    rc_data.max_unit = 6;
+    rc_data.unit_elem = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.speed_wpm);
+    rc_data.max_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.max_unit);
+    rc_data.max_unit_x2 = rc_data.max_unit * 2;
+    rc_data.min_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.min_unit);
+}
+
+
+
+
 /*! \brief Reset the decoder. */
 void CCw::reset()
 {
@@ -140,62 +205,57 @@ void CCw::reset()
     space_cnt = 0;
     hex_code  = ENTER_DOT;
     Flags = 0;
-    period = 30;
+    period = 15;
 
+    sigfft = new gr::fft::fft_real_fwd(12000);
 
-    sigfft = new gr::fft::fft_real_fwd(4800);
-    bestfreq = 500;
+    bestfreq = 700;
     lastsamples = 0;
-    backbuf = (float*)malloc(48000 * sizeof(float)* 2);
+    rc_data.dsp_rate = 24000;
+    rc_data.det_squelch = 45;//50;
+    rc_data.det_ratio = 1.7;//2.0;
+
+    backbuf = (float*)malloc(24000 * sizeof(float)*4);
+    memset(backbuf,0,sizeof(float)*24000*4);
     backpos = 0;
-    votes = (int*)malloc(4800 * sizeof(int));
-    memset(votes,0,sizeof(int)*4800);
+
+    history = (float*)malloc(24000 * sizeof(float)*2);
+    memset(history,0,sizeof(float)*24000*2);
+    fftsize = 0;
+
+
+    votes = (float*)malloc(6000 * sizeof(float));
+    memset(votes,0,sizeof(float)*6000);
     voted = 0;
 
-    rc_data.tone_freq = 720;
-    rc_data.dsp_rate = 48000;
-
-    rc_data.det_squelch = 50;
-    rc_data.speed_wpm = 15;
-    rc_data.det_ratio = 2.0;
-    rc_data.min_unit = 60;
-    rc_data.max_unit = 6;
-
-    rc_data.unit_elem = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.speed_wpm);
-
-    Flags |= ADAPT_SPEED;
-    rc_data.max_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.max_unit);
-    rc_data.max_unit_x2 = rc_data.max_unit * 2;
-    rc_data.min_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.min_unit);
-
-
-    double w = 2.0 * M_PI * (double)rc_data.tone_freq / (double)rc_data.dsp_rate;
-    detector_data.cosw  = cos(w);
-    detector_data.sinw  = sin(w);
-    detector_data.coeff = 2.0 * detector_data.cosw;
-    detector_data.samples_buff_idx = 0;
-    detector_data.sig_level_idx = 0;
-    detector_data.state_idx = 0;
-    detector_data.frag_len = (rc_data.dsp_rate * CYCLES_PER_FRAG) / rc_data.tone_freq;
-    detector_data.samples_buff_len = (CYCLES_PER_FRAG * rc_data.max_unit * rc_data.dsp_rate) / rc_data.tone_freq;
+    rc_data.tone_freq = bestfreq;
 
     detector_data.samples_buff = NULL;
-    alloc = (size_t)detector_data.samples_buff_len * sizeof(short);
-    detector_data.samples_buff = (short int*)malloc(alloc*100);
-    for( idx = 0; idx < detector_data.samples_buff_len; idx++ )
+    detector_data.sig_level_buff = NULL;
+    detector_data.state = NULL;
+    change_wpm(15);
+    change_freq(bestfreq);
+
+
+    alloc = (size_t)detector_data.samples_buff_len * sizeof(short) * 24000 * 100;
+    detector_data.samples_buff = (short int*)malloc(alloc);
+    for( idx = 0; idx < (int)(alloc/(sizeof(short))); idx++ )
         detector_data.samples_buff[idx] = 0;
 
     detector_data.sig_level_buff = NULL;
-    alloc = (size_t)rc_data.max_unit_x2 * sizeof(int);
-    detector_data.sig_level_buff = (int*)malloc(alloc*100);
-    for( idx = 0; idx < rc_data.max_unit_x2; idx++ )
+    alloc = (size_t)rc_data.max_unit_x2 * sizeof(int) * 24000 * 100;
+    detector_data.sig_level_buff = (int*)malloc(alloc);
+    for( idx = 0; idx < (int)(alloc/(sizeof(int))); idx++ )
         detector_data.sig_level_buff[idx] = 0;
 
     detector_data.state = NULL;
-    alloc = (size_t)rc_data.max_unit;
-    detector_data.state = (unsigned char*)malloc(alloc*100);
-    for( idx = 0; idx < rc_data.max_unit; idx++ )
+    alloc = (size_t)rc_data.max_unit * 24000 * 100;
+    detector_data.state = (unsigned char*)malloc(alloc);
+    for( idx = 0; idx < (int)alloc; idx++ )
         detector_data.state[idx] = 0;
+    // yes, again
+    change_freq(bestfreq);
+
 
 }
 
@@ -206,14 +266,23 @@ void CCw::demod(float *buffer, int length)
 {
     char sym;
     QString letter;
-    float mag,avg, best;
+    float magn, best;
+    int bestpos;
     int pos;
     int a,idx;
+    float *in = sigfft->get_inbuf();
 
 
-    memcpy(&backbuf[backpos],buffer,length*sizeof(float));
-    int sz = backpos + length;
-    for (a=0;a<sz;a+=detector_data.frag_len)
+    if (length>0)
+    {
+        memcpy(&backbuf[backpos],buffer,(length)*sizeof(float));
+        backpos += length;
+    }
+
+    if (backpos<(int)detector_data.frag_len)
+        return;
+
+    for (a=0;a<backpos;a+=detector_data.frag_len)
     {
         if (Get_Character(&sym, &backbuf[a]))
         {
@@ -225,98 +294,67 @@ void CCw::demod(float *buffer, int length)
         }
     }
     a-=detector_data.frag_len;
-    backpos = (sz - a);
-    memcpy(backbuf,&backbuf[a],(sz-a)*sizeof(float));
+    memmove(backbuf,&backbuf[a],(backpos-a)*sizeof(float));
+    backpos -= a;
 
 
 
-    if ((lastsamples>1)&&(length>0))
+    memcpy(&history[fftsize],buffer,length);
+    fftsize+=length;
+
+    if (fftsize>12000)
     {
-        mag = pos = avg = best = (float)0;
-        memcpy(sigfft->get_inbuf(), buffer, sizeof(float)*std::min(4800,length));
+        magn = pos = bestpos = best = (float)0;
+        memcpy(in, history, sizeof(float)*std::min(12000,fftsize));
         sigfft->execute();
-
+        memset(history,0,12000*sizeof(float));
         gr_complex *out = sigfft->get_outbuf();
-        for (int k = 0; k < 100; k++)
+        best = 0;
+        for (int k = 0; k < 6000; k++)
         {
-            mag = out[k].real()*out[k].real();
-            mag += out[k].imag()*out[k].imag();
-            if ((mag>best)&&(!isnan(mag)) && (isfinite(mag)))
+            magn = abs(out[k]);
+            if ((!isnan(magn)) && (isfinite(magn)) && (magn<100000) && (magn > -100000) && (magn!=0.0))
             {
-                avg += mag;
-                best = mag;
-                pos = k;
+                votes[k]+=magn;
+                if (magn>best)
+                {
+                    best = magn;
+                    bestpos = k;
+                }
             }
         }
-        avg /= 100.0;
-        verbprintf(10,"FreqFFT: avg=%f best=%f freq=%d lengthfft=%d\n",avg,best,(pos*10), std::min(4800,length));
-        if ( ((best / avg)>5.0) && (!isnan(best)) && (isfinite(best)) )
-        {
-            lastsamples = 0;
-            votes[pos]+=1;
-            voted ++;
-        }
+        verbprintf(10,"FreqFFT: bestpos=%d best=%f freq=%d fft=%d len=%d\n",bestpos,best,(bestpos*2), std::min(12000,fftsize),fftsize);
+        fftsize = 0;
+        voted++;
     }
+
 
     if (voted==period)
     {
         int mb = 0;
         int mp = 0;
-        for (int k=0;k<100;k++)
+        for (int k=0;k<6000;k++)
         if (votes[k]>mb)
         {
                 mp = k;
                 mb = votes[k];
         }
         voted = 0;
-        period = 100;
-        if ((mb>1)&&((mp*10)+5!=rc_data.tone_freq)&&(mp!=0)&&(mp!=0)&&(mp<100))
+        period = 50;
+        printf("NEW MB=%d MP=%d tone_freq=%d\n",mb,(mp*2),rc_data.tone_freq);
+        if ((mb>1)&&(((mp*2))!=rc_data.tone_freq)&&(mp!=0)&&(mp<400))
         {
-            verbprintf(5,"New best freq (votes=%d) = %d\n",mb,(mp*10)+5);
-            rc_data.tone_freq = (mp*10)+5;
-            rc_data.min_unit = 60;
-            rc_data.max_unit = 6;
-            rc_data.unit_elem = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.speed_wpm);
-            rc_data.max_unit = (60 * rc_data.tone_freq) /
-                (50 * CYCLES_PER_FRAG * rc_data.max_unit);
-            rc_data.max_unit_x2 = rc_data.max_unit * 2;
-            rc_data.min_unit = (60 * rc_data.tone_freq) /
-                (50 * CYCLES_PER_FRAG * rc_data.min_unit);
-            double w = 2.0 * M_PI * (double)rc_data.tone_freq / (double)rc_data.dsp_rate;
-            detector_data.cosw  = cos(w);
-            detector_data.sinw  = sin(w);
-            detector_data.coeff = 2.0 * detector_data.cosw;
-            detector_data.frag_len =
-                (rc_data.dsp_rate * CYCLES_PER_FRAG) / rc_data.tone_freq;
-            detector_data.samples_buff_len =
-                (CYCLES_PER_FRAG * rc_data.max_unit * rc_data.dsp_rate) / rc_data.tone_freq;
-
-            /* !!!!! */
-            detector_data.samples_buff_idx = 0;
-            detector_data.sig_level_idx = 0;
-            detector_data.state_idx = 0;
-            for( idx = 0; idx < detector_data.samples_buff_len; idx++ )
-                detector_data.samples_buff[idx] = 0;
-            for( idx = 0; idx < rc_data.max_unit_x2; idx++ )
-                detector_data.sig_level_buff[idx] = 0;
-            for( idx = 0; idx < rc_data.max_unit; idx++ )
-                detector_data.state[idx] = 0;
-            space_elem_cnt = 0;
-            space_frag_cnt = 0;
-            mark_elem_cnt  = 0;
-            mark_frag_cnt  = 0;
-            Flags = 0;
-            Flags |= ADAPT_SPEED;
-            mark_cnt  = 0;
-            space_cnt = 0;
-            hex_code  = ENTER_DOT;
-            state = 0;
-
-            context = NO_CONTEXT;
-            memset(votes,0,sizeof(int)*4800);
+            verbprintf(5,"New best freq (votes=%d) = %d\n",mb,(mp*2));
+            change_freq((mp*2));
         }
+        memset(votes,0,sizeof(float)*6000);
     }
+
     lastsamples++;
+
+
+
+
 }
 
 
@@ -332,19 +370,21 @@ bool CCw::Get_Fragment(float *in)
     int state_cnt;
     int idx, ids;
     double q0, q1, q2, level;
-
+    float tmp;
 
     block_size = detector_data.frag_len;
 
     for( frag_timer = 0; frag_timer < detector_data.frag_len; frag_timer++ )
     {
-        detector_data.samples_buff[detector_data.samples_buff_idx] = (short int)((in[frag_timer]*32768.0*0.99));
+        tmp = in[frag_timer];
+
+        detector_data.samples_buff[detector_data.samples_buff_idx] = (short int)((tmp*32768.0*0.99));
+
         detector_data.samples_buff_idx++;
         if( detector_data.samples_buff_idx >= detector_data.samples_buff_len )
         {
             detector_data.samples_buff_idx = 0;
         }
-
     }
 
     detector_data.samples_buff_idx -= block_size;
@@ -658,14 +698,7 @@ void CCw::Adapt_Decoder( void )
                 verbprintf(5,"NEW SPEED: %d\n", speed);
                 QString str = "WPM: "+QString::number(speed);
                 emit updateWPM(str);
-
-                rc_data.min_unit = 40;
-                rc_data.max_unit = 6;
-                rc_data.speed_wpm = speed;
-                rc_data.unit_elem = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.speed_wpm);
-                rc_data.max_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.max_unit);
-                rc_data.max_unit_x2 = rc_data.max_unit * 2;
-                rc_data.min_unit = (60 * rc_data.tone_freq) / (50 * CYCLES_PER_FRAG * rc_data.min_unit);
+                change_wpm(speed);
             }
         }
     }

@@ -29,7 +29,6 @@
 #include <math.h>
 #include <gnuradio/fft/fft.h>
 
-
 typedef struct
 {
   int  dsp_rate;
@@ -61,6 +60,8 @@ public:
     void reset();
     void incWPM();
     void decWPM();
+    void change_freq(int freq);
+    void change_wpm(int wpm);
     int getWPM();
 
 
@@ -83,7 +84,7 @@ private:
     int lastsamples;
     float *backbuf;
     int backpos;
-    int *votes;
+    float *votes;
     int voted;
     struct tdetector_data
     {
@@ -109,6 +110,8 @@ private:
     int Flags;
     rc_data_t rc_data;
     int period;
+    float *history;
+    int fftsize;
 };
 
 #endif // CLE_H

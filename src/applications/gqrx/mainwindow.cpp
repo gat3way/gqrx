@@ -2119,7 +2119,7 @@ void MainWindow::on_actionCW_triggered()
         qDebug() << "Starting CW decoder.";
 
         /* start sample sniffer */
-        if (rx->start_sniffer(48000, DATA_BUFFER_SIZE) == receiver::STATUS_OK)
+        if (rx->start_sniffer(24000/*48000*/, DATA_BUFFER_SIZE) == receiver::STATUS_OK)
         {
             dec_cw = new CwWin(this);
             connect(dec_cw, SIGNAL(windowClosed()), this, SLOT(cwwin_closed()));
