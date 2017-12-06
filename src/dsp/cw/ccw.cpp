@@ -70,7 +70,7 @@
 #define ENTER_DOT               0x01
 
 static int verbose_level = 2;
-static bool first = true;
+
 
 
 CCw::CCw(QObject *parent) :
@@ -269,38 +269,15 @@ void CCw::demod(float *buffer, int length)
     float magn, best;
     int bestpos;
     int pos;
-    int a,idx;
+    int a;
     float *in = sigfft->get_inbuf();
 
 
     if (length>0)
     {
-        memcpy(&backbuf[backpos],buffer,(length)*sizeof(float));
-        backpos += length;
+        memcpy(&history[fftsize],buffer,length);
+        fftsize+=length;
     }
-
-    if (backpos<(int)detector_data.frag_len)
-        return;
-
-    for (a=0;a<backpos;a+=detector_data.frag_len)
-    {
-        if (Get_Character(&sym, &backbuf[a]))
-        {
-            verbprintf(3,"DECODED - %c\n",sym);
-            letter.append(sym);
-            emit prevMessage(QTextCursor::End,QTextCursor::MoveAnchor);
-            emit newMessage(letter);
-            emit prevMessage(QTextCursor::End,QTextCursor::MoveAnchor);
-        }
-    }
-    a-=detector_data.frag_len;
-    memmove(backbuf,&backbuf[a],(backpos-a)*sizeof(float));
-    backpos -= a;
-
-
-
-    memcpy(&history[fftsize],buffer,length);
-    fftsize+=length;
 
     if (fftsize>12000)
     {
@@ -352,6 +329,32 @@ void CCw::demod(float *buffer, int length)
 
     lastsamples++;
 
+
+
+
+    if (length>0)
+    {
+        memcpy(&backbuf[backpos],buffer,(length)*sizeof(float));
+        backpos += length;
+    }
+
+    if (backpos<(int)detector_data.frag_len)
+        return;
+
+    for (a=0;a<backpos;a+=detector_data.frag_len)
+    {
+        if (Get_Character(&sym, &backbuf[a]))
+        {
+            verbprintf(3,"DECODED - %c\n",sym);
+            letter.append(sym);
+            emit prevMessage(QTextCursor::End,QTextCursor::MoveAnchor);
+            emit newMessage(letter);
+            emit prevMessage(QTextCursor::End,QTextCursor::MoveAnchor);
+        }
+    }
+    a-=detector_data.frag_len;
+    memmove(backbuf,&backbuf[a],(backpos-a)*sizeof(float));
+    backpos -= a;
 
 
 
