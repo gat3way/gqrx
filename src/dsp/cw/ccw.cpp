@@ -69,7 +69,7 @@
 
 #define ENTER_DOT               0x01
 
-static int verbose_level = 10;
+static int verbose_level = 2;
 static bool first = true;
 
 
@@ -341,7 +341,7 @@ void CCw::demod(float *buffer, int length)
         }
         voted = 0;
         period = 50;
-        printf("NEW MB=%d MP=%d tone_freq=%d\n",mb,(mp*2),rc_data.tone_freq);
+        verbprintf(10,"NEW MB=%d MP=%d tone_freq=%d\n",mb,(mp*2),rc_data.tone_freq);
         if ((mb>1)&&(((mp*2))!=rc_data.tone_freq)&&(mp!=0)&&(mp<400))
         {
             verbprintf(5,"New best freq (votes=%d) = %d\n",mb,(mp*2));
