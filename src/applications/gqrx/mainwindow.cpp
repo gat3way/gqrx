@@ -66,7 +66,8 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     d_have_audio(true),
     dec_afsk1200(0),
     dec_ale(0),
-    dec_cw(0)
+    dec_cw(0),
+    dec_ism433(0)
 {
     ui->setupUi(this);
     Bookmarks::create();
@@ -2137,7 +2138,7 @@ void MainWindow::on_actionCW_triggered()
 
 
 /**
- * Destroy ALE decoder window got closed.
+ * Destroy CW decoder window got closed.
  *
  * This slot is connected to the windowClosed() signal of the AFSK1200 decoder
  * object. We need this to properly destroy the object, stop timeout and clean
@@ -2155,6 +2156,61 @@ void MainWindow::cwwin_closed()
 }
 
 
+
+/**
+ * ISM433 decoder action triggered.
+ *
+ * This slot is called when the user activates the ISM433
+ * action. It will create an CW decoder window and start
+ * and start pushing data from the receiver to it.
+ */
+void MainWindow::on_actionISM433_triggered()
+{
+
+    if (dec_ism433 != 0)
+    {
+        qDebug() << "ISM433 decoder already active.";
+        dec_ism433->raise();
+    }
+    else
+    {
+        qDebug() << "Starting ISM433 decoder.";
+
+        /* start sample sniffer */
+        if (rx->start_sniffer(48000, DATA_BUFFER_SIZE) == receiver::STATUS_OK)
+        {
+            dec_ism433 = new Ism433Win(this);
+            connect(dec_ism433, SIGNAL(windowClosed()), this, SLOT(ism433win_closed()));
+            dec_ism433->show();
+
+            dec_timer->start(100);
+        }
+        else
+            QMessageBox::warning(this, tr("Gqrx error"),
+                                 tr("Error starting sample sniffer.\n"
+                                    "Close all data decoders and try again."),
+                                 QMessageBox::Ok, QMessageBox::Ok);
+    }
+}
+
+
+/**
+ * Destroy ISM433 decoder window got closed.
+ *
+ * This slot is connected to the windowClosed() signal of the ISM433 decoder
+ * object. We need this to properly destroy the object, stop timeout and clean
+ * up whatever need to be cleaned up.
+ */
+void MainWindow::ism433win_closed()
+{
+    /* stop cyclic processing */
+    dec_timer->stop();
+    rx->stop_sniffer();
+
+    /* delete decoder object */
+    delete dec_ism433;
+    dec_ism433 = 0;
+}
 
 
 
@@ -2175,6 +2231,8 @@ void MainWindow::decoderTimeout()
         dec_ale->process_samples(&buffer[0], num);
     else if (dec_cw)
         dec_cw->process_samples(&buffer[0], num);
+    else if (dec_ism433)
+        dec_ism433->process_samples(&buffer[0], num);
 
 }
 

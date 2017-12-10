@@ -223,6 +223,7 @@
     <addaction name="actionAFSK1200"/>
     <addaction name="actionALE"/>
     <addaction name="actionCW"/>
+    <addaction name="actionISM433"/>
    </widget>
 
    <addaction name="menu_File"/>
@@ -332,6 +333,14 @@
    </property>
    <property name="toolTip">
     <string>Start CW decoder</string>
+   </property>
+  </action>
+  <action name="actionISM433">
+   <property name="text">
+    <string>ISM433 Decoder</string>
+   </property>
+   <property name="toolTip">
+    <string>Start ISM433 decoder</string>
    </property>
   </action>
   <action name="actionSched">

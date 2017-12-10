@@ -1,4 +1,4 @@
-
+add_subdirectory(ism433)
 # Add the source files to SRCS_LIST
 add_source_files(SRCS_LIST
 	afsk1200/cafsk12.cpp
@@ -10,9 +10,9 @@ add_source_files(SRCS_LIST
 	ale/cale.h
 	cw/ccw.cpp
 	cw/ccw.h
-    filter/fir_decim.cpp
-    filter/fir_decim.h
-    filter/fir_decim_coef.h
+        filter/fir_decim.cpp
+        filter/fir_decim.h
+        filter/fir_decim_coef.h
 	rds/api.h
 	rds/constants.h
 	rds/decoder_impl.cc
@@ -53,3 +53,4 @@ add_source_files(SRCS_LIST
 	stereo_demod.cpp
 	stereo_demod.h
 )
+

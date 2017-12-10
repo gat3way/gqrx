@@ -42,6 +42,7 @@
 #include "qtgui/afsk1200win.h"
 #include "qtgui/alewin.h"
 #include "qtgui/cwwin.h"
+#include "qtgui/ism433win.h"
 #include "qtgui/iq_tool.h"
 
 #include "applications/gqrx/remote_control.h"
@@ -109,6 +110,7 @@ private:
     Afsk1200Win    *dec_afsk1200;
     AleWin         *dec_ale;
     CwWin          *dec_cw;
+    Ism433Win      *dec_ism433;
     bool            dec_rds;
 
     QTimer   *dec_timer;
@@ -220,6 +222,7 @@ private slots:
     void on_actionAFSK1200_triggered();
     void on_actionALE_triggered();
     void on_actionCW_triggered();
+    void on_actionISM433_triggered();
     void on_actionUserGroup_triggered();
     void on_actionNews_triggered();
     void on_actionRemoteProtocol_triggered();
@@ -232,6 +235,7 @@ private slots:
     void afsk1200win_closed();
     void alewin_closed();
     void cwwin_closed();
+    void ism433win_closed();
     int  firstTimeConfig();
 
     /* cyclic processing */

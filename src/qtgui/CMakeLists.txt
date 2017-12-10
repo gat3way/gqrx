@@ -7,6 +7,8 @@ add_source_files(SRCS_LIST
 	alewin.h
 	cwwin.cpp
 	cwwin.h
+	ism433win.cpp
+	ism433win.h
 	agc_options.cpp
 	agc_options.h
 	audio_options.cpp
@@ -17,9 +19,9 @@ add_source_files(SRCS_LIST
 	bookmarkstablemodel.h
 	bookmarkstaglist.cpp
 	bookmarkstaglist.h
-    ctk/ctkPimpl.h
-    ctk/ctkRangeSlider.cpp
-    ctk/ctkRangeSlider.h
+        ctk/ctkPimpl.h
+        ctk/ctkRangeSlider.cpp
+        ctk/ctkRangeSlider.h
 	demod_options.cpp
 	demod_options.h
 	dockaudio.cpp
@@ -56,6 +58,7 @@ add_source_files(UI_SRCS_LIST
 	afsk1200win.ui
 	alewin.ui
 	cwwin.ui
+	ism433win.ui
 	agc_options.ui
 	audio_options.ui
 	demod_options.ui

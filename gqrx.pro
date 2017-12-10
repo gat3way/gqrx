@@ -95,6 +95,7 @@ SOURCES += \
     src/applications/gqrx/remote_control_settings.cpp \
     src/dsp/ale/cale.cpp \
     src/dsp/cw/ccw.cpp \
+    src/dsp/ism433/cism433.cpp \
     src/dsp/afsk1200/cafsk12.cpp \
     src/dsp/afsk1200/costabf.c \
     src/dsp/agc_impl.cpp \
@@ -151,6 +152,7 @@ HEADERS += \
     src/dsp/afsk1200/cafsk12.h \
     src/dsp/ale/cale.h \
     src/dsp/cw/ccw.h \
+    src/dsp/cism433/cism433.h \
     src/dsp/afsk1200/filter.h \
     src/dsp/afsk1200/filter-i386.h \
     src/dsp/agc_impl.h \
@@ -202,7 +204,14 @@ HEADERS += \
     src/qtgui/qtcolorpicker.h \
     src/receivers/nbrx.h \
     src/receivers/receiver_base.h \
-    src/receivers/wfmrx.h
+    src/receivers/wfmrx.h \
+    src/dsp/ism433/includes/baseband.h \
+    src/dsp/ism433/includes/bitbuffer.h \
+    src/dsp/ism433/includes/data.h \
+    src/dsp/ism433/includes/pulse_demod.h \
+    src/dsp/ism433/includes/pulse_detect.h \
+    src/dsp/ism433/includes/util.h \
+
 
 FORMS += \
     src/applications/gqrx/mainwindow.ui \
@@ -210,6 +219,7 @@ FORMS += \
     src/qtgui/afsk1200win.ui \
     src/qtgui/alewin.ui \
     src/qtgui/cwwin.ui \
+    src/qtgui/ism433.ui \
     src/qtgui/agc_options.ui \
     src/qtgui/audio_options.ui \
     src/qtgui/demod_options.ui \
