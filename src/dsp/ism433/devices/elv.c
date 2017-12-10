@@ -23,6 +23,7 @@ static int em1000_callback(bitbuffer_t *bitbuffer) {
     uint8_t i;
     uint8_t stopbit;
     uint8_t checksum_received;
+    data_t *data;
 
     // check and combine the 3 repetitions
     for (i = 0; i < 14; i++) {
@@ -62,6 +63,16 @@ static int em1000_callback(bitbuffer_t *bitbuffer) {
     fprintf(stdout, "current cnt   = %d\n",dec[5]|dec[6]<<8);
     fprintf(stdout, "peak cnt      = %d\n",dec[7]|dec[8]<<8);
 
+    data = data_make(
+                        "model",        "",             DATA_STRING,    "ELV EM 1000 Energy monitor",
+                        "code",         "Code",         DATA_INT,       dec[1],
+                        "seqno",        "Seq.No",       DATA_INT,       dec[2],
+                        "total",        "Total",        DATA_INT,       dec[3]|dec[4]<<8,
+                        "current",      "Current",      DATA_INT,       dec[5]|dec[6]<<8,
+                        "current",      "Peak",         DATA_INT,       dec[7]|dec[8]<<8,
+                        NULL);
+    data_acquired_handler(data);
+
     return 1;
 }
 
@@ -77,6 +88,7 @@ static int ws2000_callback(bitbuffer_t *bitbuffer) {
     uint8_t i;
     uint8_t stopbit;
     uint8_t sum_received;
+    data_t *data;
 
     dec[0] = AD_POP (bb[0], 4, bit); bit+=4;
     stopbit= AD_POP (bb[0], 1, bit); bit+=1;
@@ -125,6 +137,22 @@ static int ws2000_callback(bitbuffer_t *bitbuffer) {
     if(dec[0]==4) {
         fprintf(stdout, "pressure      = %d\n", 200+dec[10]*100+dec[9]*10+dec[8]);
     }
+
+
+    char temp[64];
+    char humidity[64];
+    sprintf(temp,"%s%d.%d",dec[1]&8?"-":"", dec[4]*10+dec[3], dec[2]);
+    sprintf(humidity,"%d.%d",dec[7]*10+dec[6], dec[5]);
+
+    data = data_make(
+                        "model",        "",             DATA_STRING,    "ELV WS 2000 Weather Station",
+                        "temp",         "Temperature",  DATA_STRING,    temp,
+                        "humidity",     "Humidity",     DATA_STRING,    humidity,
+                        NULL);
+    data_acquired_handler(data);
+
+
+
 
     return 1;
 }

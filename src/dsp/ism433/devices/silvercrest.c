@@ -2,6 +2,7 @@
 
 static int silvercrest_callback(bitbuffer_t *bitbuffer) {
     bitrow_t *bb = bitbuffer->bb;
+    data_t *data;
     /* FIXME validate the received message better */
     if (bb[1][0] == 0xF8 &&
         bb[2][0] == 0xF8 &&
@@ -15,6 +16,16 @@ static int silvercrest_callback(bitbuffer_t *bitbuffer) {
         fprintf(stdout, "Remote button event:\n");
         fprintf(stdout, "model = Silvercrest, %d bits\n",bitbuffer->bits_per_row[1]);
         fprintf(stdout, "%02x %02x %02x %02x %02x\n",bb[1][0],bb[0][1],bb[0][2],bb[0][3],bb[0][4]);
+
+        data = data_make(
+                        "model",        "",             DATA_STRING,    "Silvercrest remote button",
+                        "byte1",        "Byte1",        DATA_INT,       bb[0][1],
+                        "byte1",        "Byte2",        DATA_INT,       bb[0][2],
+                        "byte1",        "Byte3",        DATA_INT,       bb[0][3],
+                        "byte1",        "Byte4",        DATA_INT,       bb[0][4],
+                        NULL);
+        data_acquired_handler(data);
+
 
         return 1;
     }

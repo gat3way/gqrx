@@ -166,7 +166,7 @@ static int alectov1_callback(bitbuffer_t *bitbuffer) {
                             "battery",       "Battery",     DATA_STRING, battery_low ? "LOW" : "OK",
                             "temperature_C", "Temperature", DATA_FORMAT, "%.02f C", DATA_DOUBLE, (float) temp / 10.0F,
                             "humidity",      "Humidity",    DATA_FORMAT, "%u %%",   DATA_INT, humidity,
-                            "mic",           "",            DATA_STRING,    "CHECKSUM",
+                            "mic",           "Integrity",            DATA_STRING,    "CHECKSUM",
                             NULL);
             data_acquired_handler(data);
         }

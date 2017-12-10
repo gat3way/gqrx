@@ -76,6 +76,7 @@
 
 static int DSC_callback(bitbuffer_t *bitbuffer) {
     bitrow_t *bb = bitbuffer->bb;
+    data_t *data;
     int valid_cnt = 0;
     char time_str[LOCAL_TIME_BUFLEN];
 
@@ -149,6 +150,15 @@ static int DSC_callback(bitbuffer_t *bitbuffer) {
         if (crc8le(bytes, DSC_CT_MSGLEN, DSC_CT_CRC_POLY, DSC_CT_CRC_INIT) == 0) {
             printf("%s DSC Contact ESN: %06X, Status: %02X, CRC: %02X\n",
                 time_str, esn, status, crc);
+
+            data = data_make(
+                        "time",         "",             DATA_STRING,    time_str,
+                        "model",                "",             DATA_STRING,    "DSC Contact sensor",
+                        "esn",           "ESN",           DATA_INT,       esn,
+                        "status",        "Status",           DATA_INT,       status,
+                        NULL);
+            data_acquired_handler(data);
+
 
             valid_cnt++; // Have a valid packet.
         } else if (debug_output) {

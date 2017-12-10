@@ -225,6 +225,7 @@ void CIsm433::reset()
     signal_start = 0;
     signal_end = 0;
     memset(signal_pulse_data,0,4000*3*sizeof(int));
+    memset(message,0,65535*sizeof(int));
     signal_pulse_counter = 0;
 
 
@@ -282,7 +283,6 @@ void CIsm433::demod(float *buffer, int length)
         else if (buffer[i] > 0)
             buffer[i] = std::min(buffer[i]*gain, 1.0f);
         demodst->am_buf[i] = (short int)(buffer[i]*32768.0*0.999);
-
         demodst->fm_buf[i] = demodst->am_buf[i];
     }
 
