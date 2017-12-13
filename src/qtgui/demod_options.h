@@ -46,7 +46,8 @@ public:
         PAGE_FM_OPT = 1,
         PAGE_AM_OPT = 2,
         PAGE_CW_OPT = 3,
-        PAGE_NUM    = 4
+        PAGE_DSD_OPT = 4,
+        PAGE_NUM    = 5
     };
 
     explicit CDemodOptions(QWidget *parent = 0);
@@ -82,12 +83,17 @@ signals:
     /*! \brief CW offset changed. */
     void cwOffsetChanged(int offset);
 
+    /*! \brief Signal emitted when DSD Frame type changed */
+    void dsdFrametypeSelected(int frametype);
+
+
 private slots:
     void on_maxdevSelector_activated(int index);
     void on_emphSelector_activated(int index);
     void on_dcrCheckBox_toggled(bool checked);
     void on_syncCheckBox_toggled(bool checked);
     void on_cwOffsetSpin_valueChanged(int value);
+    void on_frametypeSelector_activated(int index);
 
 private:
     Ui::CDemodOptions *ui;

@@ -75,7 +75,8 @@ public:
         MODE_CWL        = 8, /*!< CW using LSB filter. */
         MODE_CWU        = 9, /*!< CW using USB filter. */
         MODE_WFM_STEREO_OIRT = 10, /*!< Broadcast FM (stereo oirt). */
-        MODE_LAST       = 11
+        MODE_DSD        = 11, /*!< DSD. */
+        MODE_LAST       = 12
     };
 
     explicit DockRxOpt(qint64 filterOffsetRange = 90000, QWidget *parent = 0);
@@ -131,6 +132,9 @@ signals:
 
     /** Signal emitted when new demodulator is selected. */
     void demodSelected(int demod);
+
+    /** Signal emitted when new FM deviation is selected. */
+    void dsdFrametypeSelected(int index);
 
     /** Signal emitted when new FM deviation is selected. */
     void fmMaxdevSelected(float max_dev);
@@ -210,6 +214,7 @@ private slots:
     void demodOpt_amDcrToggled(bool enabled);
     void demodOpt_amSyncToggled(bool enabled);
     void demodOpt_cwOffsetChanged(int offset);
+    void demodOpt_dsdFrametypeSelected(int index);
 
     // Signals coming from AGC options popup
     void agcOpt_hangToggled(bool checked);

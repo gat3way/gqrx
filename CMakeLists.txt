@@ -107,6 +107,63 @@ set(GR_REQUIRED_COMPONENTS RUNTIME ANALOG AUDIO BLOCKS DIGITAL FILTER FFT PMT)
 find_package(Gnuradio REQUIRED)
 find_package(Gnuradio-osmosdr REQUIRED)
 
+
+# mbelib (optional dependency)
+find_path(LIBMBE_INCLUDE_DIR mbelib.h
+          HINTS ${PC_LIBMBE_INCLUDEDIR} ${PC_LIBMBE_INCLUDE_DIRS}
+          PATH_SUFFIXES libmbe )
+
+find_library(LIBMBE_LIBRARY NAMES mbe libmbe
+             HINTS ${PC_LIBMBE_LIBDIR} ${PC_LIBMBE_LIBRARY_DIRS} )
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(LibMbe  DEFAULT_MSG
+                                  LIBMBE_LIBRARY LIBMBE_INCLUDE_DIR)
+
+mark_as_advanced(LIBMBE_INCLUDE_DIR LIBMBE_LIBRARY )
+
+set(LIBMBE_LIBRARIES ${LIBMBE_LIBRARY} )
+set(LIBMBE_INCLUDE_DIRS ${LIBMBE_INCLUDE_DIR} )
+if (LIBMBE_LIBRARIES)
+    add_definitions(-DMBE_FOUND)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread -lmbe")
+    MESSAGE("libmbe found, DSD support enabled!")
+    MESSAGE(${LIBMBE_INCLUDE_DIRS})
+else()
+    MESSAGE("libmbe not found, DSD voice decoding disabled")
+endif()
+
+
+
+# mbelib (optional dependency)
+find_path(LIBITPP_INCLUDE_DIR/itpp itcomm.h
+          HINTS ${PC_LIBITPP_INCLUDEDIR} ${PC_LIBITPP_INCLUDE_DIRS}
+          PATH_SUFFIXES libitpp )
+
+find_library(LIBITPP_LIBRARY NAMES itpp libitpp
+             HINTS ${PC_LIBITPP_LIBDIR} ${PC_LIBITPP_LIBRARY_DIRS} )
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(LibITPP  DEFAULT_MSG
+                                  LIBITPP_LIBRARY LIBITPP_INCLUDE_DIR)
+
+mark_as_advanced(LIBITPP_INCLUDE_DIR LIBITPP_LIBRARY )
+
+set(LIBITPP_LIBRARIES ${LIBITPP_LIBRARY} )
+set(LIBITPP_INCLUDE_DIRS ${LIBITPP_INCLUDE_DIR} )
+if (LIBITPP_LIBRARIES)
+    add_definitions(-DITPP_FOUND)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -litpp")
+    MESSAGE("libitpp found.")
+    MESSAGE(${LIBITPP_INCLUDE_DIRS})
+else()
+    MESSAGE("libitpp not found!")
+endif()
+
+if (NOT ${ITPP_LIBRARY})
+    message(FATAL_ERROR "libitpp required to compile gqrx")
+endif()
+
 if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Runtime required to compile gqrx")
 endif()

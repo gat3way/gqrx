@@ -94,6 +94,10 @@ public:
     virtual void set_am_dcr(bool enabled);
     virtual void set_am_sync(bool enabled);
 
+    /* DSD parameters */
+    virtual bool has_dsd();
+    virtual void set_dsd_frametype(int type);
+
     virtual void get_rds_data(std::string &outbuff, int &num);
     virtual void start_rds_decoder();
     virtual void stop_rds_decoder();

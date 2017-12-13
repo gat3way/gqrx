@@ -902,6 +902,11 @@ receiver::status receiver::set_demod(rx_demod demod)
         rx->set_demod(nbrx::NBRX_DEMOD_SSB);
         break;
 
+    case RX_DEMOD_DSD:
+        connect_all(RX_CHAIN_NBRX);
+        rx->set_demod(nbrx::NBRX_DEMOD_DSD);
+        break;
+
     default:
         ret = STATUS_ERROR;
         break;
@@ -951,6 +956,16 @@ receiver::status receiver::set_am_sync(bool enabled)
 
     return STATUS_OK;
 }
+
+
+receiver::status receiver::set_dsd_frametype(int index)
+{
+    if (rx->has_dsd())
+        rx->set_dsd_frametype(index);
+
+    return STATUS_OK;
+}
+
 
 
 receiver::status receiver::set_af_gain(float gain_db)

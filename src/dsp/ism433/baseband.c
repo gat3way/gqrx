@@ -123,7 +123,7 @@ void baseband_demod_FM(const uint8_t *x_buf, int16_t *y_buf, unsigned num_sample
     int16_t ar, ai;  // New IQ sample: x[n]
     int16_t br, bi;  // Old IQ sample: x[n-1]
     int32_t pr, pi;  // Phase difference vector
-    int16_t angle;   // Phase difference angle
+    //int16_t angle;   // Phase difference angle
     int16_t xlp, ylp, xlp_old, ylp_old;  // Low Pass filter variables
 
     // Pre-feed old sample

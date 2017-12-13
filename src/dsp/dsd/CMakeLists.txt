@@ -1,0 +1,38 @@
+# Add the source files to SRCS_LIST
+add_source_files(SRCS_LIST
+    Hamming.cpp
+    p25p1_check_hdu.cpp
+    p25p1_check_ldu.cpp
+    p25p1_check_nid.cpp
+    dmr_data.c
+    dsd_file.c
+    dsd_main.c
+    dsd_upsample.c
+    nxdn_data.c
+    p25p1_heuristics.c
+    p25p1_tdu.c
+    x2tdma_data.c
+    dmr_voice.c
+    dsd_filters.c
+    dsd_mbe.c
+    dstar.c
+    nxdn_voice.c
+    p25p1_ldu1.c
+    p25p1_tdulc.c
+    x2tdma_voice.c
+    dsd_audio.c
+    dsd_frame.c
+    dsd_serial.c
+    dstar_header.c
+    p25_lcw.c
+    p25p1_ldu2.c
+    pa_devs.c
+    dsd_dibit.c
+    dsd_frame_sync.c
+    dsd_symbol.c
+    nxdn96.c
+    p25p1_hdu.c
+    p25p1_ldu.c
+    provoice.c
+)
+

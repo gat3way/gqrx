@@ -181,3 +181,8 @@ void CDemodOptions::on_cwOffsetSpin_valueChanged(int value)
 {
     emit cwOffsetChanged(value);
 }
+
+void CDemodOptions::on_frametypeSelector_activated(int index)
+{
+    emit dsdFrametypeSelected(index);
+}

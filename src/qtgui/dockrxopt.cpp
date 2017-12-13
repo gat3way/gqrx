@@ -41,7 +41,8 @@ static const int filter_preset_table[DockRxOpt::MODE_LAST][3][2] =
     {{    100,   4000}, {   100,  2800}, {   300,  2400}},  // MODE_USB
     {{  -1000,   1000}, {  -250,   250}, {  -100,   100}},  // MODE_CWL
     {{  -1000,   1000}, {  -250,   250}, {  -100,   100}},  // MODE_CWU
-    {{-100000, 100000}, {-80000, 80000}, {-60000, 60000}}   // MODE_WFM_STEREO_OIRT
+    {{-100000, 100000}, {-80000, 80000}, {-60000, 60000}},  // MODE_WFM_STEREO_OIRT
+    {{ -10000, 10000}, { -7000,  7000}, { -3500,  3500}}   // MODE_DSD
 };
 
 DockRxOpt::DockRxOpt(qint64 filterOffsetRange, QWidget *parent) :
@@ -66,6 +67,7 @@ DockRxOpt::DockRxOpt(qint64 filterOffsetRange, QWidget *parent) :
         ModulationStrings.append("CW-L");
         ModulationStrings.append("CW-U");
         ModulationStrings.append("WFM (oirt)");
+        ModulationStrings.append("DSD");
     }
     ui->modeSelector->addItems(ModulationStrings);
 
@@ -103,6 +105,7 @@ DockRxOpt::DockRxOpt(qint64 filterOffsetRange, QWidget *parent) :
     connect(demodOpt, SIGNAL(amDcrToggled(bool)), this, SLOT(demodOpt_amDcrToggled(bool)));
     connect(demodOpt, SIGNAL(amSyncToggled(bool)), this, SLOT(demodOpt_amSyncToggled(bool)));
     connect(demodOpt, SIGNAL(cwOffsetChanged(int)), this, SLOT(demodOpt_cwOffsetChanged(int)));
+    connect(demodOpt, SIGNAL(dsdFrametypeSelected(int)), this, SLOT(demodOpt_dsdFrametypeSelected(int)));
 
     // AGC options dialog
     agcOpt = new CAgcOptions(this);
@@ -543,6 +546,8 @@ void DockRxOpt::updateDemodOptPage(int demod)
         demodOpt->setCurrentPage(CDemodOptions::PAGE_FM_OPT);
     else if (demod == MODE_AM)
         demodOpt->setCurrentPage(CDemodOptions::PAGE_AM_OPT);
+    else if (demod == MODE_DSD)
+        demodOpt->setCurrentPage(CDemodOptions::PAGE_DSD_OPT);
     else if (demod == MODE_CWL || demod == MODE_CWU)
         demodOpt->setCurrentPage(CDemodOptions::PAGE_CW_OPT);
     else
@@ -659,6 +664,16 @@ void DockRxOpt::on_sqlSpinBox_valueChanged(double value)
 {
     emit sqlLevelChanged(value);
 }
+
+/**
+ * @brief DSD frame type changed by user.
+ * @param index The new type index
+ */
+void DockRxOpt::demodOpt_dsdFrametypeSelected(int index)
+{
+    emit dsdFrametypeSelected(index);
+}
+
 
 /**
  * @brief FM deviation changed by user.

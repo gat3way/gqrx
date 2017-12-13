@@ -208,6 +208,7 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     connect(uiDockRxOpt, SIGNAL(fmEmphSelected(double)), this, SLOT(setFmEmph(double)));
     connect(uiDockRxOpt, SIGNAL(amDcrToggled(bool)), this, SLOT(setAmDcr(bool)));
     connect(uiDockRxOpt, SIGNAL(amSyncToggled(bool)), this, SLOT(setAmSync(bool)));
+    connect(uiDockRxOpt, SIGNAL(dsdFrametypeSelected(int)), this, SLOT(setDsdFrametype(int)));
     connect(uiDockRxOpt, SIGNAL(cwOffsetChanged(int)), this, SLOT(setCwOffset(int)));
     connect(uiDockRxOpt, SIGNAL(agcToggled(bool)), this, SLOT(setAgcOn(bool)));
     connect(uiDockRxOpt, SIGNAL(agcHangToggled(bool)), this, SLOT(setAgcHang(bool)));
@@ -1091,6 +1092,14 @@ void MainWindow::selectDemod(int mode_idx)
         click_res = 10;
         break;
 
+    case DockRxOpt::MODE_DSD:
+        /* DSD */
+        rx->set_demod(receiver::RX_DEMOD_DSD);
+        ui->plotter->setDemodRanges(-40000, -1000, 1000, 40000, true);
+        uiDockAudio->setFftRange(0, 5000);
+        click_res = 10;
+        break;
+
     default:
         qDebug() << "Unsupported mode selection (can't happen!): " << mode_idx;
         flo = -5000;
@@ -1139,6 +1148,18 @@ void MainWindow::setFmEmph(double tau)
 
     /* receiver will check range */
     rx->set_fm_deemph(tau);
+}
+
+/**
+ * @brief New DSD Frame type selected.
+ * @param index - index of type
+ */
+void MainWindow::setDsdFrametype(int index)
+{
+    qDebug() << "DSD FRAMETYPE: " << index;
+
+    /* receiver will check range */
+    rx->set_dsd_frametype(index);
 }
 
 

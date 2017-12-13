@@ -169,6 +169,7 @@ private slots:
     double setSqlLevelAuto();
     void setAudioGain(float gain);
     void setPassband(int bandwidth);
+    void setDsdFrametype(int type);
 
     /* audio recording and playback */
     void startAudioRec(const QString filename);

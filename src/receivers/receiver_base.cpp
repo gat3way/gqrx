@@ -138,6 +138,16 @@ void receiver_base_cf::set_fm_deemph(double tau)
     (void) tau;
 }
 
+bool receiver_base_cf::has_dsd()
+{
+    return false;
+}
+
+void receiver_base_cf::set_dsd_frametype(int index)
+{
+    (void) index;
+}
+
 bool receiver_base_cf::has_am()
 {
     return false;

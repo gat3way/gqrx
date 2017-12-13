@@ -33,8 +33,9 @@
 #include "dsp/rx_filter.h"
 #include "dsp/rx_meter.h"
 #include "dsp/rx_agc_xx.h"
-#include "dsp/rx_demod_fm.h"
 #include "dsp/rx_demod_am.h"
+#include "dsp/rx_demod_fm.h"
+#include "dsp/rx_demod_dsd.h"
 //#include "dsp/resampler_ff.h"
 #include "dsp/resampler_xx.h"
 #include <gnuradio/blocks/float_to_complex.h>
@@ -60,7 +61,8 @@ public:
         NBRX_DEMOD_AM   = 1,  /*!< Amplitude modulation. */
         NBRX_DEMOD_FM   = 2,  /*!< Frequency modulation. */
         NBRX_DEMOD_SSB  = 3,  /*!< Single Side Band. */
-        NBRX_DEMOD_NUM  = 4   /*!< Included for convenience. */
+        NBRX_DEMOD_DSD  = 4,   /*!< DSD */
+        NBRX_DEMOD_NUM  = 5   /*!< Included for convenience. */
     };
 
 public:
@@ -111,6 +113,12 @@ public:
     void set_am_dcr(bool enabled);
     void set_am_sync(bool enabled);
 
+    /* DSD parameters */
+    bool has_dsd() { return true; }
+    void set_dsd_frametype(int index);
+
+
+
 private:
     bool   d_running;          /*!< Whether receiver is running or not. */
     float  d_quad_rate;        /*!< Input sample rate. */
@@ -129,6 +137,7 @@ private:
     gr::blocks::complex_to_float::sptr  demod_raw;  /*!< Raw I/Q passthrough. */
     gr::blocks::complex_to_real::sptr   demod_ssb;  /*!< SSB demodulator. */
 
+    rx_demod_dsd_sptr         demod_dsd;  /*!< DSD demodulator. */
     rx_demod_fm_sptr          demod_fm;   /*!< FM demodulator. */
     rx_demod_am_sptr          demod_am;   /*!< AM demodulator. */
     resampler_ff_sptr         audio_rr;   /*!< Audio resampler. */

@@ -50,6 +50,7 @@ nbrx::nbrx(float quad_rate, float audio_rate)
     demod_ssb = gr::blocks::complex_to_real::make(1);
     demod_fm = make_rx_demod_fm(PREF_QUAD_RATE, 5000.0, 75.0e-6);
     demod_am = make_rx_demod_am(PREF_QUAD_RATE, true);
+    demod_dsd = make_rx_demod_dsd(PREF_QUAD_RATE);
 
     audio_rr.reset();
     if (d_audio_rate != PREF_QUAD_RATE)
@@ -236,6 +237,11 @@ void nbrx::set_demod(int rx_demod)
         demod = demod_am;
         break;
 
+    case NBRX_DEMOD_DSD:
+        d_demod = NBRX_DEMOD_DSD;
+        demod = demod_dsd;
+        break;
+
     case NBRX_DEMOD_FM:
     default:
         d_demod = NBRX_DEMOD_FM;
@@ -247,6 +253,12 @@ void nbrx::set_demod(int rx_demod)
     connect(demod, 0, nr, 0);
 
 }
+
+void nbrx::set_dsd_frametype(int index)
+{
+    demod_dsd->set_frame_type(index);
+}
+
 
 void nbrx::set_fm_maxdev(float maxdev_hz)
 {

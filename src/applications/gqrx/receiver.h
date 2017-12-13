@@ -40,6 +40,7 @@
 #include "dsp/rx_filter.h"
 #include "dsp/rx_meter.h"
 #include "dsp/rx_agc_xx.h"
+#include "dsp/rx_demod_dsd.h"
 #include "dsp/rx_demod_fm.h"
 #include "dsp/rx_demod_am.h"
 #include "dsp/rx_fft.h"
@@ -88,7 +89,8 @@ public:
         RX_DEMOD_WFM_M = 4,  /*!< Frequency modulation (wide, mono). */
         RX_DEMOD_WFM_S = 5,  /*!< Frequency modulation (wide, stereo). */
         RX_DEMOD_WFM_S_OIRT = 6,  /*!< Frequency modulation (wide, stereo oirt). */
-        RX_DEMOD_SSB   = 7   /*!< Single Side Band. */
+        RX_DEMOD_SSB   = 7,   /*!< Single Side Band. */
+        RX_DEMOD_DSD   = 8   /*!< Single Side Band. */
     };
 
     /** Supported receiver types. */
@@ -190,6 +192,9 @@ public:
     /* AM parameters */
     status      set_am_dcr(bool enabled);
     status      set_am_sync(bool enabled);
+
+    /* DSD parameters */
+    status      set_dsd_frametype(int type);
 
     /* Audio parameters */
     status      set_af_gain(float gain_db);

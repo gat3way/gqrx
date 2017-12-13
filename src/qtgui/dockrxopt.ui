@@ -596,9 +596,6 @@ This is an offset from the hardware RF frequency.&lt;/p&gt;&lt;/body&gt;&lt;/htm
         </item>
        </layout>
       </item>
-
-
-
       <item row="7" column="1">
        <layout class="QHBoxLayout" name="horizontalLayoutNr">
         <property name="spacing">

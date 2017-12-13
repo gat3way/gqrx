@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>CDemodOptions</class>
  <widget class="QDialog" name="CDemodOptions">
@@ -272,6 +271,110 @@ For digital modes it is best to switch it off.</string>
         </item>
        </layout>
       </widget>
+     </widget>
+     <widget class="QWidget" name="demodDsdOpt">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <layout class="QFormLayout" name="pagedemodFormLayout4">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
+         <property name="labelAlignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="horizontalSpacing">
+          <number>10</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>5</number>
+         </property>
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>5</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="frametypeLabel">
+           <property name="text">
+            <string>Frame Type</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="frametypeSelector">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>DSD Frame Type</string>
+           </property>
+           <property name="statusTip">
+            <string>DSD Frame Type - Please note Automatic setting does not detect DSTAR and Provoice</string>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <item>
+            <property name="text">
+             <string>Automatic</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>D-STAR</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Motorola X2-TDMA</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Provoice</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>P25 Phase 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>NXDN48 (IDAS)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>NXDN96</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DMR/MOTOTRBO</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
