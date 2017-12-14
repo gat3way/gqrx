@@ -9,10 +9,14 @@ processProVoice (dsd_opts * opts, dsd_state * state)
   char imbe7100_fr1[7][24];
   char imbe7100_fr2[7][24];
   const int *w, *x;
+  char msg[1024];
+
+  msg[0] = 0;
 
   if (opts->errorbars == 1)
     {
-      printf ("VOICE e:");
+      sprintf (msg,"VOICE e:");
+      strcat(state->msgbuf,msg);
     }
 
   for (i = 0; i < 64; i++)
@@ -514,6 +518,7 @@ processProVoice (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      printf ("\n");
+      sprintf (msg,"\n");
+      strcat(state->msgbuf,msg);
     }
 }

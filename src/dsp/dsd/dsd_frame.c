@@ -27,22 +27,29 @@ printFrameInfo (dsd_opts * opts, dsd_state * state)
 {
 
   int level;
+  char msg[1024];
+
+  msg[0] = 0;
 
   level = (int) state->max / 164;
   if (opts->verbose > 0)
     {
-      printf ("inlvl: %2i%% ", level);
+      sprintf (msg,"inlvl: %2i%% ", level);
+      strcat(state->msgbuf,msg);
     }
   if (state->nac != 0)
     {
-      printf ("nac: %4X ", state->nac);
+      sprintf (msg,"nac: %4X ", state->nac);
+      strcat(state->msgbuf,msg);
     }
 
   if (opts->verbose > 1)
     {
-      printf ("src: %8ld ", state->lastsrc);
+      sprintf (msg,"src: %8ld ", state->lastsrc);
+      strcat(state->msgbuf,msg);
     }
-  printf ("tg: %5ld ", state->lasttg);
+  sprintf (msg,"tg: %5ld ", state->lasttg);
+  strcat(state->msgbuf,msg);
 }
 
 void
@@ -61,7 +68,9 @@ processFrame (dsd_opts * opts, dsd_state * state)
   int new_nac;
   char new_duid[3];
   int check_result;
+  char msg[1024];
 
+  msg[0] = 0;
   nac[12] = 0;
   duid[2] = 0;
   j = 0;
@@ -88,7 +97,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->verbose > 0)
             {
               level = (int) state->max / 164;
-              printf ("inlvl: %2i%% ", level);
+              sprintf (msg,"inlvl: %2i%% ", level);
+              strcat(state->msgbuf,msg);
             }
         }
       state->nac = 0;
@@ -107,7 +117,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->verbose > 0)
             {
               level = (int) state->max / 164;
-              printf ("inlvl: %2i%% ", level);
+              sprintf (msg,"inlvl: %2i%% ", level);
+              strcat(state->msgbuf,msg);
             }
         }
       state->nac = 0;
@@ -125,7 +136,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->verbose > 0)
             {
               level = (int) state->max / 164;
-              printf ("inlvl: %2i%% ", level);
+              sprintf (msg,"inlvl: %2i%% ", level);
+              strcat(state->msgbuf,msg);
             }
         }
       state->nac = 0;
@@ -143,7 +155,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->verbose > 0)
             {
               level = (int) state->max / 164;
-              printf ("inlvl: %2i%% ", level);
+              sprintf (msg,"inlvl: %2i%% ", level);
+              strcat(state->msgbuf,msg);
             }
         }
       state->nac = 0;
@@ -162,7 +175,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->verbose > 0)
             {
               level = (int) state->max / 164;
-              printf ("inlvl: %2i%% ", level);
+              sprintf (msg, "inlvl: %2i%% ", level);
+              strcat(state->msgbuf,msg);
             }
         }
       if ((state->synctype == 11) || (state->synctype == 12))
@@ -208,7 +222,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->verbose > 0)
             {
               level = (int) state->max / 164;
-              printf ("inlvl: %2i%% ", level);
+              sprintf (msg,"inlvl: %2i%% ", level);
+              strcat(state->msgbuf,msg);
             }
         }
       sprintf (state->fsubtype, " VOICE        ");
@@ -310,9 +325,12 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" HDU\n");
+          sprintf (msg," HDU\n");
+          strcat(state->msgbuf,msg);
         }
+#ifdef MBE_FOUND
       mbe_initMbeParms (state->cur_mp, state->prev_mp, state->prev_mp_enhanced);
+#endif
       state->lastp25type = 2;
       sprintf (state->fsubtype, " HDU          ");
       processHDU (opts, state);
@@ -323,7 +341,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" LDU1  ");
+          sprintf (msg," LDU1  ");
+          strcat(state->msgbuf,msg);
         }
       state->lastp25type = 1;
       sprintf (state->fsubtype, " LDU1         ");
@@ -338,7 +357,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->errorbars == 1)
             {
               printFrameInfo (opts, state);
-              printf (" Ignoring LDU2 not preceeded by LDU1\n");
+              sprintf (msg, " Ignoring LDU2 not preceeded by LDU1\n");
+              strcat(state->msgbuf,msg);
             }
           state->lastp25type = 0;
           sprintf (state->fsubtype, "              ");
@@ -348,7 +368,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
           if (opts->errorbars == 1)
             {
               printFrameInfo (opts, state);
-              printf (" LDU2  ");
+              sprintf (msg, " LDU2  ");
+              strcat(state->msgbuf,msg);
             }
           state->lastp25type = 2;
           sprintf (state->fsubtype, " LDU2         ");
@@ -362,9 +383,12 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" TDULC\n");
+          sprintf (msg, " TDULC\n");
+          strcat(state->msgbuf,msg);
         }
+#ifdef MBE_FOUND
       mbe_initMbeParms (state->cur_mp, state->prev_mp, state->prev_mp_enhanced);
+#endif
       state->lasttg = 0;
       state->lastsrc = 0;
       state->lastp25type = 0;
@@ -384,9 +408,12 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" TDU\n");
+          sprintf (msg," TDU\n");
+          strcat(state->msgbuf,msg);
         }
+#ifdef MBE_FOUND
       mbe_initMbeParms (state->cur_mp, state->prev_mp, state->prev_mp_enhanced);
+#endif
       state->lasttg = 0;
       state->lastsrc = 0;
       state->lastp25type = 0;
@@ -400,7 +427,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" TSDU\n");
+          sprintf (msg," TSDU\n");
+          strcat(state->msgbuf,msg);
         }
       if (opts->resume > 0)
         {
@@ -420,7 +448,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" PDU\n");
+          sprintf (msg, " PDU\n");
+          strcat(state->msgbuf,msg);
         }
       if (opts->resume > 0)
         {
@@ -435,7 +464,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf ("(LDU2) ");
+          sprintf (msg, "(LDU2) ");
+          strcat(state->msgbuf,msg);
         }
       //state->lastp25type = 0;
       // Guess that the state is LDU2
@@ -449,7 +479,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf ("(LDU1) ");
+          sprintf (msg, "(LDU1) ");
+          strcat(state->msgbuf,msg);
         }
       //state->lastp25type = 0;
       // Guess that the state is LDU1
@@ -463,7 +494,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" (TSDU)\n");
+          sprintf (msg, " (TSDU)\n");
+          strcat(state->msgbuf,msg);
         }
       //state->lastp25type = 0;
       // Guess that the state is TSDU
@@ -479,7 +511,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" (PDU)\n");
+          sprintf (msg, " (PDU)\n");
+          strcat(state->msgbuf,msg);
         }
       state->lastp25type = 0;
     }
@@ -490,7 +523,8 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          printf (" duid:%s *Unknown DUID*\n", duid);
+          sprintf (" duid:%s *Unknown DUID*\n", duid);
+          strcat(state->msgbuf,msg);
         }
     }
 }

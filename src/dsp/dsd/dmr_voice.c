@@ -33,6 +33,7 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
 //  char cachdata[13];
   int mutecurrentslot;
   int msMode;
+  char msg[1024];
 
 #ifdef DMR_DUMP
   int k;
@@ -40,6 +41,7 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
   char cachbits[25];
 #endif
 
+  msg[0] = 0;
   mutecurrentslot = 0;
   msMode = 0;
 
@@ -226,7 +228,8 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
 
       if ((j == 0) && (opts->errorbars == 1))
         {
-          printf ("%s %s  VOICE e:", state->slot0light, state->slot1light);
+          sprintf (msg,"%s %s  VOICE e:", state->slot0light, state->slot1light);
+          strcat(state->msgbuf,msg);
         }
 
 #ifdef DMR_DUMP
@@ -376,7 +379,8 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      printf ("\n");
+      //printf ("\n");
+      strcat(state->msgbuf,"\n");
     }
 
 }

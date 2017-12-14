@@ -23,14 +23,19 @@ processP25lcw (dsd_opts * opts, dsd_state * state, char *lcformat, char *mfid, c
   char tmpstr[255];
   long talkgroup, source;
   int i, j;
+  char msg[1024];
+
+  msg[0] = 0;
 
 
   if (opts->p25lc == 1)
     {
-      printf ("lcformat: %s mfid: %s lcinfo: %s ", lcformat, mfid, lcinfo);
+      sprintf (msg,"lcformat: %s mfid: %s lcinfo: %s ", lcformat, mfid, lcinfo);
+      strcat(state->msgbuf,msg);
       if (opts->p25tg == 0)
         {
-          printf ("\n");
+          sprintf (msg,"\n");
+          strcat(state->msgbuf,msg);
         }
     }
 
@@ -61,12 +66,14 @@ processP25lcw (dsd_opts * opts, dsd_state * state, char *lcformat, char *mfid, c
         }
       if (opts->p25tg == 1)
         {
-          printf ("tg: %li ", talkgroup);
+          sprintf (msg,"tg: %li ", talkgroup);
+          strcat(state->msgbuf,msg);
         }
 
       if (opts->p25tg == 1)
         {
-          printf ("tg: %li ", talkgroup);
+          sprintf (msg,"tg: %li ", talkgroup);
+          strcat(state->msgbuf,msg);
 
           // the remaining 3 appear to be other active tg's on the system
           j = 0;
@@ -81,7 +88,8 @@ processP25lcw (dsd_opts * opts, dsd_state * state, char *lcformat, char *mfid, c
           tmpstr[15] = 48;
           tmpstr[16] = 0;
           talkgroup = strtol (tmpstr, NULL, 2);
-          printf ("%li ", talkgroup);
+          sprintf (msg,"%li ", talkgroup);
+          strcat(state->msgbuf,msg);
           j = 0;
           for (i = 16; i < 28; i++)
             {
@@ -94,7 +102,8 @@ processP25lcw (dsd_opts * opts, dsd_state * state, char *lcformat, char *mfid, c
           tmpstr[15] = 48;
           tmpstr[16] = 0;
           talkgroup = strtol (tmpstr, NULL, 2);
-          printf ("%li ", talkgroup);
+          sprintf (msg,"%li ", talkgroup);
+          strcat(state->msgbuf,msg);
           j = 0;
           for (i = 4; i < 16; i++)
             {
@@ -107,7 +116,8 @@ processP25lcw (dsd_opts * opts, dsd_state * state, char *lcformat, char *mfid, c
           tmpstr[15] = 48;
           tmpstr[16] = 0;
           talkgroup = strtol (tmpstr, NULL, 2);
-          printf ("%li\n", talkgroup);
+          sprintf (msg,"%li\n", talkgroup);
+          strcat(state->msgbuf,msg);
         }
     }
 
@@ -151,7 +161,8 @@ processP25lcw (dsd_opts * opts, dsd_state * state, char *lcformat, char *mfid, c
         }
       if (opts->p25tg == 1)
         {
-          printf ("tg: %li ", talkgroup);
+          sprintf (msg,"tg: %li ", talkgroup);
+          strcat(state->msgbuf,msg);
         }
 
       j = 0;
@@ -176,6 +187,7 @@ processP25lcw (dsd_opts * opts, dsd_state * state, char *lcformat, char *mfid, c
     }
   else if ((opts->p25tg == 1) && (opts->p25lc == 1))
     {
-      printf ("\n");
+      sprintf (msg,"\n");
+      strcat(state->msgbuf,msg);
     }
 }

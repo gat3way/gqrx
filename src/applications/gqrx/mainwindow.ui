@@ -223,6 +223,7 @@
     <addaction name="actionAFSK1200"/>
     <addaction name="actionALE"/>
     <addaction name="actionCW"/>
+    <addaction name="actionDSDD"/>
     <addaction name="actionISM433"/>
    </widget>
 
@@ -333,6 +334,14 @@
    </property>
    <property name="toolTip">
     <string>Start CW decoder</string>
+   </property>
+  </action>
+  <action name="actionDSDD">
+   <property name="text">
+    <string>DSD Decoder</string>
+   </property>
+   <property name="toolTip">
+    <string>Start DSD decoder</string>
    </property>
   </action>
   <action name="actionISM433">

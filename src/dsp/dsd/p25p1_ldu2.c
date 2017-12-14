@@ -39,12 +39,13 @@ processLDU2 (dsd_opts * opts, dsd_state * state)
   char hex_parity[8][6];   // Parity of the data, again in hex-word format. A total of 12 parity hex words.
 
   int irrecoverable_errors;
+  char msg[1024];
 
   AnalogSignal analog_signal_array[16*(3+2)+8*(3+2)];
   int analog_signal_index;
 
   analog_signal_index = 0;
-
+  msg[0] = 0;
   // we skip the status dibits that occur every 36 symbols
   // the first IMBE frame starts 14 symbols before next status
   // so we start counter at 36-14-1 = 21
@@ -52,7 +53,8 @@ processLDU2 (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      printf ("e:");
+      sprintf (msg,"e:");
+      strcat(state->msgbuf,msg);
     }
 
   // IMBE 1
@@ -188,12 +190,14 @@ processLDU2 (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      printf ("\n");
+      sprintf (msg,"\n");
+      strcat(state->msgbuf,msg);
     }
 
   if (opts->p25status == 1)
     {
-      printf ("lsd1: %s lsd2: %s\n", lsd1, lsd2);
+      sprintf (msg,"lsd1: %s lsd2: %s\n", lsd1, lsd2);
+      strcat(state->msgbuf,msg);
     }
 
   // trailing status symbol
@@ -364,6 +368,7 @@ processLDU2 (dsd_opts * opts, dsd_state * state)
     {
       algidhex = strtol (algid, NULL, 2);
       kidhex = strtol (kid, NULL, 2);
-      printf ("mi: %s algid: $%x kid: $%x\n", mi, algidhex, kidhex);
+      sprintf (msg,"mi: %s algid: $%x kid: $%x\n", mi, algidhex, kidhex);
+      strcat(state->msgbuf,msg);
     }
 }

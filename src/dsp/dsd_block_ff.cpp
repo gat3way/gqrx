@@ -34,6 +34,10 @@
 #include <stdio.h>
 
 
+
+CdsdProxy *CdsdProxy::instance = 0;
+
+
 /*
  * Create a new instance of dsd_block_ff and return
  * a boost shared_ptr.  This is effectively the public constructor.
@@ -115,6 +119,8 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
     initOpts (&params.opts);
     initState (&params.state);
     pthread_attr_t tattr;
+
+    proxy = CdsdProxy::getInstance();
 
     params.num = num;
     params.opts.split = 1;
@@ -198,8 +204,9 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
     if (!empty_frames) {
         set_output_multiple(160);
     }
+    params.state.msgbuf = (char*)malloc(4096);
+    memset(params.state.msgbuf,0,4096);
     params.state.input_length = 0;
-
     params.state.output_buffer = (short *) malloc(4 * 80000); // TODO: Make this variable size.
     params.state.output_offset = 0;
     if (params.state.output_buffer == NULL)
@@ -242,6 +249,7 @@ dsd_block_ff::~dsd_block_ff ()
     free(params.state.cur_mp);
     free(params.state.prev_mp);
     free(params.state.prev_mp_enhanced);
+    free(params.state.msgbuf);
 }
 
 
@@ -390,6 +398,7 @@ int dsd_block_ff::general_work (int noutput_items,
     params.state.input_samples = in;
     params.state.input_length = ninput_items[0];
     params.state.input_offset = 0;
+    memset(params.state.msgbuf,0,1024);
 
     if (pthread_cond_signal(&params.state.input_ready))
     {
@@ -407,6 +416,14 @@ int dsd_block_ff::general_work (int noutput_items,
         {
             printf("general_work -> Error waiting for condition\n");
         }
+    }
+    if (params.state.msgbuf[0]!=0)
+    {
+        params.state.msgbuf[1024] = 0;
+        printf("%s",params.state.msgbuf);
+        // set!
+        proxy->send(params.state.msgbuf);
+        memset(params.state.msgbuf,0,1024);
     }
 
     if (empty_frames) 
@@ -428,17 +445,6 @@ int dsd_block_ff::general_work (int noutput_items,
             this->consume(0, ninput_items[0]);
             return (16);
         }
-/*
-        if ((params.state.output_num_samples > 0) && (params.state.output_num_samples < noutput_items)) 
-        {
-            return noutput_items;
-        }
-        else 
-        {
-            this->consume(0, ninput_items[0]);
-            return noutput_items;
-        }
-*/
     }
 
 }

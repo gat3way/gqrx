@@ -40,7 +40,9 @@ processLDU1 (dsd_opts* opts, dsd_state* state)
 
   AnalogSignal analog_signal_array[12*(3+2)+12*(3+2)];
   int analog_signal_index;
+  char msg[1024];
 
+  msg[0] = 0;
 
   analog_signal_index = 0;
 
@@ -51,7 +53,8 @@ processLDU1 (dsd_opts* opts, dsd_state* state)
 
   if (opts->errorbars == 1)
     {
-      printf ("e:");
+      sprintf (msg,"e:");
+      strcat(state->msgbuf,msg);
     }
 
   // IMBE 1
@@ -187,12 +190,14 @@ processLDU1 (dsd_opts* opts, dsd_state* state)
 
   if (opts->errorbars == 1)
     {
-      printf ("\n");
+      sprintf (msg,"\n");
+      strcat(state->msgbuf,msg);
     }
 
   if (opts->p25status == 1)
     {
-      printf ("lsd1: %s lsd2: %s\n", lsd1, lsd2);
+      sprintf (msg,"lsd1: %s lsd2: %s\n", lsd1, lsd2);
+      strcat(state->msgbuf,msg);
     }
 
   // trailing status symbol

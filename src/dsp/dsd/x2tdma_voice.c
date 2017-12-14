@@ -44,6 +44,9 @@ processX2TDMAvoice (dsd_opts * opts, dsd_state * state)
   char cachbits[25];
   char syncbits[49];
 #endif
+  char msg[1024];
+
+  msg[0] = 0;
 
   lcformat[8] = 0;
   mfid[8] = 0;
@@ -239,7 +242,8 @@ processX2TDMAvoice (dsd_opts * opts, dsd_state * state)
 
       if ((j == 0) && (opts->errorbars == 1))
         {
-          printf ("%s %s  VOICE e:", state->slot0light, state->slot1light);
+          sprintf (msg,"%s %s  VOICE e:", state->slot0light, state->slot1light);
+          strcat(state->msgbuf,msg);
         }
 
 #ifdef X2TDMA_DUMP
@@ -622,7 +626,8 @@ processX2TDMAvoice (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      printf ("\n");
+      sprintf (msg,"\n");
+      strcat(state->msgbuf,msg);
     }
 
   if (mutecurrentslot == 0)
@@ -635,7 +640,8 @@ processX2TDMAvoice (dsd_opts * opts, dsd_state * state)
         {
           algidhex = strtol (state->algid, NULL, 2);
           kidhex = strtol (state->keyid, NULL, 2);
-          printf ("mi: %s algid: $%x kid: $%x\n", mi, algidhex, kidhex);
+          sprintf (msg,"mi: %s algid: $%x kid: $%x\n", mi, algidhex, kidhex);
+          strcat(state->msgbuf,msg);
         }
     }
 }

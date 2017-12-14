@@ -20,22 +20,29 @@
 void
 printFrameSync (dsd_opts * opts, dsd_state * state, char *frametype, int offset, char *modulation)
 {
+  char msg[1024];
+
+  msg[0] = 0;
 
   if (opts->verbose > 0)
     {
-      printf ("Sync: %s ", frametype);
+      sprintf (msg,"Sync: %s ", frametype);
+      strcat(state->msgbuf,msg);
     }
   if (opts->verbose > 2)
     {
-      printf ("o: %4i ", offset);
+      sprintf (msg,"o: %4i ", offset);
+      strcat(state->msgbuf,msg);
     }
   if (opts->verbose > 1)
     {
-      printf ("mod: %s ", modulation);
+      sprintf (msg,"mod: %s ", modulation);
+      strcat(state->msgbuf,msg);
     }
   if (opts->verbose > 2)
     {
-      printf ("g: %f ", state->aout_gain);
+      sprintf (msg, "g: %f ", state->aout_gain);
+      strcat(state->msgbuf,msg);
     }
 }
 
@@ -77,6 +84,9 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
   int lbuf[24], lbuf2[24];
   int lsum;
   char spectrum[64];
+  char msg[1024];
+
+  msg[0] = 0;
 
   for (i = 18; i < 24; i++)
     {
@@ -814,7 +824,8 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
             {
               if ((opts->errorbars == 1) && (opts->verbose > 1) && (state->carrier == 1))
                 {
-                  printf ("Sync: no sync\n");
+                  sprintf (msg,"Sync: no sync\n");
+                  strcat(state->msgbuf,msg);
                 }
               noCarrier (opts, state);
               return (-1);

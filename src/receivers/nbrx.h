@@ -116,6 +116,7 @@ public:
     /* DSD parameters */
     bool has_dsd() { return true; }
     void set_dsd_frametype(int index);
+    rx_demod_dsd_sptr         demod_dsd;  /*!< DSD demodulator. */
 
 
 
@@ -137,7 +138,6 @@ private:
     gr::blocks::complex_to_float::sptr  demod_raw;  /*!< Raw I/Q passthrough. */
     gr::blocks::complex_to_real::sptr   demod_ssb;  /*!< SSB demodulator. */
 
-    rx_demod_dsd_sptr         demod_dsd;  /*!< DSD demodulator. */
     rx_demod_fm_sptr          demod_fm;   /*!< FM demodulator. */
     rx_demod_am_sptr          demod_am;   /*!< AM demodulator. */
     resampler_ff_sptr         audio_rr;   /*!< Audio resampler. */

@@ -219,16 +219,16 @@ processHDU(dsd_opts* opts, dsd_state* state)
   int algidhex, kidhex;
   char hex[6];
   int status_count;
-
+  char msg[1024];
   char hex_data[20][6];    // Data in hex-words (6 bit words). A total of 20 hex words.
   char hex_parity[16][6];  // Parity of the data, again in hex-word format. A total of 16 parity hex words.
-
   int irrecoverable_errors;
 
   AnalogSignal analog_signal_array[20*(3+6)+16*(3+6)];
   int analog_signal_index;
 
   analog_signal_index = 0;
+  msg[0] = 0;
 
   // we skip the status dibits that occur every 36 symbols
   // the next status symbol comes in 14 dibits from here
@@ -454,14 +454,17 @@ processHDU(dsd_opts* opts, dsd_state* state)
     {
       algidhex = strtol (algid, NULL, 2);
       kidhex = strtol (kid, NULL, 2);
-      printf ("mi: %s algid: $%x kid: $%x\n", mi, algidhex, kidhex);
+      sprintf (msg,"mi: %s algid: $%x kid: $%x\n", mi, algidhex, kidhex);
+      strcat(state->msgbuf,msg);
     }
   if (opts->p25lc == 1)
     {
-      printf ("mfid: %s tgid: %s ", mfid, tgid);
+      sprintf (msg,"mfid: %s tgid: %s ", mfid, tgid);
+      strcat(state->msgbuf,msg);
       if (opts->p25tg == 0)
         {
-          printf ("\n");
+          sprintf (msg,"\n");
+          strcat(state->msgbuf,msg);
         }
     }
 
@@ -503,6 +506,7 @@ processHDU(dsd_opts* opts, dsd_state* state)
     }
   if (opts->p25tg == 1)
     {
-      printf ("tg: %li\n", talkgroup);
+      sprintf (msg,"tg: %li\n", talkgroup);
+      strcat(state->msgbuf,msg);
     }
 }

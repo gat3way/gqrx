@@ -203,6 +203,7 @@ typedef struct
   int exitflag;
   float xv[NZEROS+1];
   float nxv[NXZEROS+1];
+  char *msgbuf;
 } dsd_state;
 
 /*

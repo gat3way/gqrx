@@ -67,6 +67,7 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     dec_afsk1200(0),
     dec_ale(0),
     dec_cw(0),
+    dec_dsd(0),
     dec_ism433(0)
 {
     ui->setupUi(this);
@@ -2179,10 +2180,53 @@ void MainWindow::cwwin_closed()
 
 
 /**
+ * DSD decoder action triggered.
+ *
+ * This slot is called when the user activates the DSD
+ * action. It will create an DSD decoder window and start
+ * and start pushing data to it.
+ */
+void MainWindow::on_actionDSDD_triggered()
+{
+
+    if (dec_dsd != 0)
+    {
+        qDebug() << "DSD decoder already active.";
+        dec_dsd->raise();
+    }
+    else
+    {
+        qDebug() << "Starting DSD decoder.";
+
+        dec_dsd = new DsdWin(this);
+        connect(dec_dsd, SIGNAL(windowClosed()), this, SLOT(dsdwin_closed()));
+        dec_dsd->show();
+    }
+}
+
+
+/**
+ * Destroy DSD decoder window got closed.
+ *
+ * This slot is connected to the windowClosed() signal of the DSD decoder
+ * object. We need this to properly destroy the object, stop timeout and clean
+ * up whatever need to be cleaned up.
+ */
+void MainWindow::dsdwin_closed()
+{
+    /* delete decoder object */
+    delete dec_dsd;
+    dec_dsd = 0;
+}
+
+
+
+
+/**
  * ISM433 decoder action triggered.
  *
  * This slot is called when the user activates the ISM433
- * action. It will create an CW decoder window and start
+ * action. It will create an ISM433 decoder window and start
  * and start pushing data from the receiver to it.
  */
 void MainWindow::on_actionISM433_triggered()

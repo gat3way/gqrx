@@ -11,6 +11,8 @@ processTDU (dsd_opts* opts, dsd_state* state)
 {
     AnalogSignal analog_signal_array[14];
     int status_count;
+    char msg[64];
+    msg[0] = 0;
 
     // we skip the status dibits that occur every 36 symbols
     // the first IMBE frame starts 14 symbols before next status
@@ -22,7 +24,8 @@ processTDU (dsd_opts* opts, dsd_state* state)
 
     // Next we should find an status dibit
     if (status_count != 35) {
-        printf("*** SYNC ERROR\n");
+        sprintf(msg,"*** SYNC ERROR\n");
+        strcat(state->msgbuf,msg);
     }
 
     // trailing status symbol

@@ -8,10 +8,14 @@ processNXDNVoice (dsd_opts * opts, dsd_state * state)
   char ambe_fr[4][24];
   const int *w, *x, *y, *z;
   const char *pr;
+  char msg[1024];
+
+  msg[0] = 0;
 
   if (opts->errorbars == 1)
     {
-      printf ("VOICE e:");
+      sprintf (msg,"VOICE e:");
+      strcat(state->msgbuf,msg);
     }
 
   for (i = 0; i < 30; i++)
@@ -54,6 +58,7 @@ processNXDNVoice (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      printf ("\n");
+      sprintf (msg,"\n");
+      strcat(state->msgbuf,msg);
     }
 }

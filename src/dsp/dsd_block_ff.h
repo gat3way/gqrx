@@ -23,6 +23,7 @@
 #define INCLUDED_DSD_BLOCK_FF_H
 
 #include <gnuradio/sync_decimator.h>
+#include <QObject>
 
 extern "C"
 {
@@ -53,6 +54,37 @@ typedef struct
     dsd_opts opts;
     dsd_state state;
 } dsd_params;
+
+
+
+
+
+class CdsdProxy: public QObject
+{
+    Q_OBJECT
+    public:
+        static CdsdProxy* getInstance() 
+        {
+            if (instance == 0)
+            {
+                instance = new CdsdProxy();
+            }
+            return instance;
+        }
+        void send(char *msg)
+        {
+            QString qs;
+            qs.append(msg);
+            emit sendDecoder(msg);
+        }
+
+    signals:
+        void sendDecoder(QString msg);
+
+    private:
+        static CdsdProxy* instance;
+        CdsdProxy() {}
+};
 
 
 
@@ -98,6 +130,7 @@ class  dsd_block_ff : public gr::block
         dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations mod, int uvquality, bool errorbars, int verbosity, bool empty, int num); // private constructor
         bool empty_frames;
         pthread_t dsd_thread;
+        CdsdProxy *proxy;
 
     public:
         ~dsd_block_ff ();
@@ -110,6 +143,8 @@ class  dsd_block_ff : public gr::block
                           gr_vector_int &ninput_items,
                           gr_vector_const_void_star &input_items,
                           gr_vector_void_star &output_items);
+
 };
+
 
 #endif /* INCLUDED_DSD_BLOCK_FF_H */

@@ -2,5 +2,6 @@
 
 #ifndef _DSTAR_HEADER_H
 #define _DSTAR_HEADER_H
-void dstar_header_decode(int radioheaderbuffer[660]);
+#include "dsd.h"
+void dstar_header_decode(int radioheaderbuffer[660], dsd_state *state);
 #endif /* _DSTAR_HEADER_H */

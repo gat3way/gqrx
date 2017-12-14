@@ -225,7 +225,9 @@ processTDULC (dsd_opts* opts, dsd_state* state)
 
   AnalogSignal analog_signal_array[6*(6+6)+6*(6+6)+10];
   int analog_signal_index;
+  char msg[64];
 
+  msg[0] = 0;
 
   analog_signal_index = 0;
 
@@ -292,7 +294,8 @@ processTDULC (dsd_opts* opts, dsd_state* state)
 
   // Next we should find an status dibit
   if (status_count != 35) {
-      printf("*** SYNC ERROR\n");
+      sprintf(msg,"*** SYNC ERROR\n");
+      strcat(state->msgbuf,msg);
   }
 
   // trailing status symbol

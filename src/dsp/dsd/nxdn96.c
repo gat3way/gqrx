@@ -5,13 +5,16 @@ void
 processNXDN96 (dsd_opts * opts, dsd_state * state)
 {
   int i, j, k, dibit;
-
+  char msg[1024];
   char ambe_fr[4][24];
   const int *w, *x, *y, *z;
 
+  msg[0]=0;
+
   if (opts->errorbars == 1)
     {
-      printf ("VOICE e:");
+      sprintf (msg,"VOICE e:");
+      strcat(state->msgbuf,msg);
     }
 
 #ifdef NXDN_DUMP
@@ -118,7 +121,8 @@ processNXDN96 (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      printf ("\n");
+      sprintf (msg,"\n");
+      strcat(state->msgbuf,msg);
     }
 
 }
