@@ -196,7 +196,7 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
     }
 
     if (!empty_frames) {
-        set_output_multiple(320);
+        set_output_multiple(160);
     }
     params.state.input_length = 0;
 
@@ -376,7 +376,7 @@ int dsd_block_ff::general_work (int noutput_items,
     const float *in = (const float *) input_items[0];
     float *out = (float *) output_items[0];
 
-    //memset(out,0,sizeof(float) * noutput_items);
+    memset(out,0,sizeof(float) * 16);
     params.state.output_samples = out;
     memset(out,0,noutput_items);
     params.state.output_num_samples = 0;
@@ -419,14 +419,14 @@ int dsd_block_ff::general_work (int noutput_items,
         if (params.state.output_num_samples>0)
         {
             this->consume(0, ninput_items[0]);
-            return std::max(noutput_items,params.state.output_num_samples);
+            return params.state.output_num_samples;
 
         }
         // get the party movin'
         else
         {
             this->consume(0, ninput_items[0]);
-            return std::max(32,params.state.output_num_samples);
+            return (16);
         }
 /*
         if ((params.state.output_num_samples > 0) && (params.state.output_num_samples < noutput_items)) 

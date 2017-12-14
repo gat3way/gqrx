@@ -279,6 +279,7 @@ processFrame (dsd_opts * opts, dsd_state * state)
       parity = (1 & dibit);     // bit 0
 
       // Check if the NID is correct
+#ifdef ITPP_FOUND
       check_result = check_NID (bch_code, &new_nac, new_duid, parity);
       if (check_result) {
           if (new_nac != state->nac) {
@@ -293,13 +294,14 @@ processFrame (dsd_opts * opts, dsd_state * state)
               duid[1] = new_duid[1];
               state->debug_header_errors++;
           }
-      } else {
+     } else {
           // Check of NID failed and unable to recover its value
           //printf("NID error\n");
           duid[0] = 'E';
           duid[1] = 'E';
           state->debug_header_critical_errors++;
       }
+#endif
     }
 
   if (strcmp (duid, "00") == 0)

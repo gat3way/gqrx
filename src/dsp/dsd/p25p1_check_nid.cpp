@@ -1,4 +1,4 @@
-
+#ifdef ITPP_FOUND
 #include <itpp/itcomm.h>
 
 #include "p25p1_check_nid.h"
@@ -88,3 +88,4 @@ int check_NID(char* bch_code, int* new_nac, char* new_duid, unsigned char parity
 
     return result;
 }
+#endif

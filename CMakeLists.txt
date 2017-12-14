@@ -160,9 +160,6 @@ else()
     MESSAGE("libitpp not found!")
 endif()
 
-if (NOT ${ITPP_LIBRARY})
-    message(FATAL_ERROR "libitpp required to compile gqrx")
-endif()
 
 if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Runtime required to compile gqrx")

@@ -75,15 +75,15 @@ rx_demod_dsd::rx_demod_dsd(float quad_rate)
     /* demodulator */
     d_quad = gr::analog::quadrature_demod_cf::make(gain);
     d_taps = gr::filter::firdes::low_pass(1.0,
-                                 48000.0,
-                                 24000,
-                                 1000,
+                                 96000.0,
+                                 4000,
+                                 200,
                                  gr::filter::firdes::WIN_HAMMING,
                                  6.76
                                 );
     d_taps2 = gr::filter::firdes::low_pass(1.0,
                                  96000.0,
-                                 48000,
+                                 46000,
                                  1000,
                                  gr::filter::firdes::WIN_HAMMING,
                                  6.76
