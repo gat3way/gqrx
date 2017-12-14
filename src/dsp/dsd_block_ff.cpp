@@ -420,8 +420,6 @@ int dsd_block_ff::general_work (int noutput_items,
     if (params.state.msgbuf[0]!=0)
     {
         params.state.msgbuf[1024] = 0;
-        printf("%s",params.state.msgbuf);
-        // set!
         proxy->send(params.state.msgbuf);
         memset(params.state.msgbuf,0,1024);
     }
