@@ -63,9 +63,9 @@ processMbeFrame (dsd_opts * opts, dsd_state * state, char imbe_fr[8][23], char a
       }
       ambe_d_str[49] = '\0';
       // print binary string
-      fprintf(stderr, "\n?\t?\t%s\t", ambe_d_str);
+      sprintf(state->msgbuf, "\n?\t?\t%s\t", ambe_d_str);
       // print error data
-      fprintf(stderr, "E1: %d; E2: %d; S: %s", state->errs, state->errs2, state->err_str);
+      sprintf(state->msgbuf, "E1: %d; E2: %d; S: %s", state->errs, state->errs2, state->err_str);
 #endif
     }
 

@@ -112,6 +112,12 @@ void rx_demod_dsd::set_frame_type(int type)
     d_decoder->set_mode((dsd_frame_mode)type);
 }
 
+void rx_demod_dsd::set_optimization(int type)
+{
+    d_decoder->reset_state();
+    d_decoder->set_optimization((dsd_modulation_optimizations)type);
+}
+
 
 
 /*

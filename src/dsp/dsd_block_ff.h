@@ -73,9 +73,13 @@ class CdsdProxy: public QObject
         }
         void send(char *msg)
         {
-            QString qs;
-            qs.append(msg);
-            emit sendDecoder(msg);
+            line.append(msg);
+            QChar ch = line[line.length()-1];
+            if (ch==QChar('\n'))
+            {
+                emit sendDecoder(line);
+                line.remove(0,line.length());
+            }
         }
 
     signals:
@@ -83,7 +87,10 @@ class CdsdProxy: public QObject
 
     private:
         static CdsdProxy* instance;
-        CdsdProxy() {}
+        QString line;
+        CdsdProxy() 
+        {
+        }
 };
 
 
@@ -127,6 +134,7 @@ class  dsd_block_ff : public gr::block
         friend  dsd_block_ff_sptr dsd_make_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations mod, int uvquality, bool errorbars, int verbosity, bool empty, int num);
         dsd_params params;
         dsd_frame_mode frame_mode;
+        dsd_modulation_optimizations optimization;
         dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations mod, int uvquality, bool errorbars, int verbosity, bool empty, int num); // private constructor
         bool empty_frames;
         pthread_t dsd_thread;
@@ -137,6 +145,7 @@ class  dsd_block_ff : public gr::block
         void reset_state();
         dsd_state *get_state();
         void set_mode(dsd_frame_mode mode);
+        void set_optimization(dsd_modulation_optimizations mode);
         dsd_frame_mode get_mode();
 
         int general_work (int noutput_items,

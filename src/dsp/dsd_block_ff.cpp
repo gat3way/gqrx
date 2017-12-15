@@ -138,38 +138,7 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
 
     empty_frames = empty;
 
-    if (mod == dsd_MOD_AUTO_SELECT)
-    {
-        params.opts.mod_c4fm = 1;
-        params.opts.mod_qpsk = 1;
-        params.opts.mod_gfsk = 1;
-        params.state.rf_mod = 0;
-    }
-    else if (mod == dsd_MOD_C4FM)
-    {
-        params.opts.mod_c4fm = 1;
-        params.opts.mod_qpsk = 0;
-        params.opts.mod_gfsk = 0;
-        params.state.rf_mod = 0;
-        //printf ("Enabling only C4FM modulation optimizations.\n");
-    }
-    else if (mod == dsd_MOD_GFSK)
-    {
-        params.opts.mod_c4fm = 0;
-        params.opts.mod_qpsk = 0;
-        params.opts.mod_gfsk = 1;
-        params.state.rf_mod = 2;
-        //printf ("Enabling only GFSK modulation optimizations.\n");
-    }
-    else if (mod == dsd_MOD_QPSK)
-    {
-        params.opts.mod_c4fm = 0;
-        params.opts.mod_qpsk = 1;
-        params.opts.mod_gfsk = 0;
-        params.state.rf_mod = 1;
-        //printf ("Enabling only QPSK modulation optimizations.\n");
-    }
-
+    set_optimization(mod);
 
 
     // Initialize the mutexes
@@ -202,7 +171,7 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
     }
 
     if (!empty_frames) {
-        set_output_multiple(160);
+        set_output_multiple(320);
     }
     params.state.msgbuf = (char*)malloc(4096);
     memset(params.state.msgbuf,0,4096);
@@ -253,6 +222,42 @@ dsd_block_ff::~dsd_block_ff ()
 }
 
 
+void dsd_block_ff::set_optimization(dsd_modulation_optimizations optimizations)
+{
+    optimization = optimizations;
+
+    if (optimizations == dsd_MOD_AUTO_SELECT)
+    {
+        params.opts.mod_c4fm = 1;
+        params.opts.mod_qpsk = 1;
+        params.opts.mod_gfsk = 1;
+        params.state.rf_mod = 0;
+    }
+    else if (optimizations == dsd_MOD_C4FM)
+    {
+        params.opts.mod_c4fm = 1;
+        params.opts.mod_qpsk = 0;
+        params.opts.mod_gfsk = 0;
+        params.state.rf_mod = 0;
+        //printf ("Enabling only C4FM modulation optimizations.\n");
+    }
+    else if (optimizations == dsd_MOD_GFSK)
+    {
+        params.opts.mod_c4fm = 0;
+        params.opts.mod_qpsk = 0;
+        params.opts.mod_gfsk = 1;
+        params.state.rf_mod = 2;
+        //printf ("Enabling only GFSK modulation optimizations.\n");
+    }
+    else if (optimizations == dsd_MOD_QPSK)
+    {
+        params.opts.mod_c4fm = 0;
+        params.opts.mod_qpsk = 1;
+        params.opts.mod_gfsk = 0;
+        params.state.rf_mod = 1;
+        //printf ("Enabling only QPSK modulation optimizations.\n");
+    }
+}
 
 void dsd_block_ff::set_mode(dsd_frame_mode frame)
 {

@@ -106,6 +106,7 @@ DockRxOpt::DockRxOpt(qint64 filterOffsetRange, QWidget *parent) :
     connect(demodOpt, SIGNAL(amSyncToggled(bool)), this, SLOT(demodOpt_amSyncToggled(bool)));
     connect(demodOpt, SIGNAL(cwOffsetChanged(int)), this, SLOT(demodOpt_cwOffsetChanged(int)));
     connect(demodOpt, SIGNAL(dsdFrametypeSelected(int)), this, SLOT(demodOpt_dsdFrametypeSelected(int)));
+    connect(demodOpt, SIGNAL(dsdOptimizationSelected(int)), this, SLOT(demodOpt_dsdOptimizationSelected(int)));
 
     // AGC options dialog
     agcOpt = new CAgcOptions(this);
@@ -673,6 +674,17 @@ void DockRxOpt::demodOpt_dsdFrametypeSelected(int index)
 {
     emit dsdFrametypeSelected(index);
 }
+
+
+/**
+ * @brief DSD optimization changed by user.
+ * @param index The new optimization index
+ */
+void DockRxOpt::demodOpt_dsdOptimizationSelected(int index)
+{
+    emit dsdOptimizationSelected(index);
+}
+
 
 
 /**

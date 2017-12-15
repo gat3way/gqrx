@@ -133,8 +133,11 @@ signals:
     /** Signal emitted when new demodulator is selected. */
     void demodSelected(int demod);
 
-    /** Signal emitted when new FM deviation is selected. */
+    /** Signal emitted when new DSD frame type is selected. */
     void dsdFrametypeSelected(int index);
+
+    /** Signal emitted when new DSD optimization is selected. */
+    void dsdOptimizationSelected(int index);
 
     /** Signal emitted when new FM deviation is selected. */
     void fmMaxdevSelected(float max_dev);
@@ -215,6 +218,7 @@ private slots:
     void demodOpt_amSyncToggled(bool enabled);
     void demodOpt_cwOffsetChanged(int offset);
     void demodOpt_dsdFrametypeSelected(int index);
+    void demodOpt_dsdOptimizationSelected(int index);
 
     // Signals coming from AGC options popup
     void agcOpt_hangToggled(bool checked);

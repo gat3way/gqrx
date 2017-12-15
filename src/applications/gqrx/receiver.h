@@ -195,6 +195,7 @@ public:
 
     /* DSD parameters */
     status      set_dsd_frametype(int type);
+    status      set_dsd_optimization(int type);
 
     /* Audio parameters */
     status      set_af_gain(float gain_db);

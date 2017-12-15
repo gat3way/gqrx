@@ -116,6 +116,7 @@ public:
     /* DSD parameters */
     bool has_dsd() { return true; }
     void set_dsd_frametype(int index);
+    void set_dsd_optimization(int index);
     rx_demod_dsd_sptr         demod_dsd;  /*!< DSD demodulator. */
 
 

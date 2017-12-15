@@ -259,6 +259,11 @@ void nbrx::set_dsd_frametype(int index)
     demod_dsd->set_frame_type(index);
 }
 
+void nbrx::set_dsd_optimization(int index)
+{
+    demod_dsd->set_optimization(index);
+}
+
 
 void nbrx::set_fm_maxdev(float maxdev_hz)
 {

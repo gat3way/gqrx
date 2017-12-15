@@ -61,6 +61,7 @@ public:
     rx_demod_dsd(float quad_rate); // FIXME: should be private
     ~rx_demod_dsd();
     void set_frame_type(int type);
+    void set_optimization(int type);
     //void set_tau(double tau);
 
 private:

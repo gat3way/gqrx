@@ -148,6 +148,12 @@ void receiver_base_cf::set_dsd_frametype(int index)
     (void) index;
 }
 
+void receiver_base_cf::set_dsd_optimization(int index)
+{
+    (void) index;
+}
+
+
 bool receiver_base_cf::has_am()
 {
     return false;

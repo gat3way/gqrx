@@ -966,6 +966,14 @@ receiver::status receiver::set_dsd_frametype(int index)
     return STATUS_OK;
 }
 
+receiver::status receiver::set_dsd_optimization(int index)
+{
+    if (rx->has_dsd())
+        rx->set_dsd_optimization(index);
+
+    return STATUS_OK;
+}
+
 
 
 receiver::status receiver::set_af_gain(float gain_db)

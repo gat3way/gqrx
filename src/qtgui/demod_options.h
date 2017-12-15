@@ -86,6 +86,9 @@ signals:
     /*! \brief Signal emitted when DSD Frame type changed */
     void dsdFrametypeSelected(int frametype);
 
+    /*! \brief Signal emitted when DSD optimization changed */
+    void dsdOptimizationSelected(int optimization);
+
 
 private slots:
     void on_maxdevSelector_activated(int index);
@@ -94,6 +97,7 @@ private slots:
     void on_syncCheckBox_toggled(bool checked);
     void on_cwOffsetSpin_valueChanged(int value);
     void on_frametypeSelector_activated(int index);
+    void on_optimizationSelector_activated(int index);
 
 private:
     Ui::CDemodOptions *ui;

@@ -210,6 +210,7 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     connect(uiDockRxOpt, SIGNAL(amDcrToggled(bool)), this, SLOT(setAmDcr(bool)));
     connect(uiDockRxOpt, SIGNAL(amSyncToggled(bool)), this, SLOT(setAmSync(bool)));
     connect(uiDockRxOpt, SIGNAL(dsdFrametypeSelected(int)), this, SLOT(setDsdFrametype(int)));
+    connect(uiDockRxOpt, SIGNAL(dsdOptimizationSelected(int)), this, SLOT(setDsdOptimization(int)));
     connect(uiDockRxOpt, SIGNAL(cwOffsetChanged(int)), this, SLOT(setCwOffset(int)));
     connect(uiDockRxOpt, SIGNAL(agcToggled(bool)), this, SLOT(setAgcOn(bool)));
     connect(uiDockRxOpt, SIGNAL(agcHangToggled(bool)), this, SLOT(setAgcHang(bool)));
@@ -1162,6 +1163,19 @@ void MainWindow::setDsdFrametype(int index)
     /* receiver will check range */
     rx->set_dsd_frametype(index);
 }
+
+/**
+ * @brief New DSD Optimization selected.
+ * @param index - index of type
+ */
+void MainWindow::setDsdOptimization(int index)
+{
+    qDebug() << "DSD OPTIMIZATION: " << index;
+
+    /* receiver will check range */
+    rx->set_dsd_optimization(index);
+}
+
 
 
 /**

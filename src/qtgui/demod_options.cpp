@@ -186,3 +186,10 @@ void CDemodOptions::on_frametypeSelector_activated(int index)
 {
     emit dsdFrametypeSelected(index);
 }
+
+
+void CDemodOptions::on_optimizationSelector_activated(int index)
+{
+    emit dsdOptimizationSelected(index);
+}
+
