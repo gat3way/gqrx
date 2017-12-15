@@ -523,7 +523,7 @@ processFrame (dsd_opts * opts, dsd_state * state)
       if (opts->errorbars == 1)
         {
           printFrameInfo (opts, state);
-          sprintf (" duid:%s *Unknown DUID*\n", duid);
+          sprintf (msg," duid:%s *Unknown DUID*\n", duid);
           strcat(state->msgbuf,msg);
         }
     }
