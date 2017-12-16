@@ -424,6 +424,12 @@ int RemoteControl::modeStrToInt(QString mode_str)
         mode_int = 10;
     }
 
+    else if (mode_str.compare("DSD", Qt::CaseInsensitive) == 0)
+    {
+        mode_int = 11;
+    }
+
+
     return mode_int;
 }
 
@@ -481,6 +487,10 @@ QString RemoteControl::intToModeStr(int mode)
         mode_str = "WFM_ST_OIRT";
         break;
 
+    case 11:
+        mode_str = "DSD";
+        break;
+
     default:
         mode_str = "ERR";
         break;
@@ -525,7 +535,7 @@ QString RemoteControl::cmd_set_mode(QStringList cmdlist)
     QString cmd_arg = cmdlist.value(1, "");
 
     if (cmd_arg == "?")
-        answer = QString("OFF RAW AM FM WFM WFM_ST WFM_ST_OIRT LSB USB CW CWU CWR CWL\n");
+        answer = QString("OFF RAW AM FM WFM WFM_ST WFM_ST_OIRT LSB USB CW CWU CWR CWL DSD\n");
     else
     {
         int mode = modeStrToInt(cmd_arg);
