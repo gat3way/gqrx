@@ -68,7 +68,7 @@ rx_demod_dsd::rx_demod_dsd(float quad_rate)
     float gain;
 
     /* demodulator gain */
-    gain = (float)d_quad_rate / ((float)2.0 * (float)M_PI * (float)15000.0);
+    gain = (float)d_quad_rate / ((float)2.0*2.0 * (float)M_PI * (float)15000.0);
 #ifndef QT_NO_DEBUG_OUTPUT
     std::cerr << "DSD demod gain: " << gain << std::endl;
 #endif
@@ -76,27 +76,28 @@ rx_demod_dsd::rx_demod_dsd(float quad_rate)
     d_quad = gr::analog::quadrature_demod_cf::make(gain);
     d_taps = gr::filter::firdes::low_pass(1.0,
                                  96000.0,
-                                 4000,
-                                 200,
+                                 3750,
+                                 500,
                                  gr::filter::firdes::WIN_HAMMING,
                                  6.76
                                 );
     d_taps2 = gr::filter::firdes::low_pass(1.0,
                                  96000.0,
-                                 46000,
-                                 1000,
+                                 32000,
+                                 12000,
                                  gr::filter::firdes::WIN_HAMMING,
                                  6.76
                                 );
 
-    d_filter = gr::filter::fir_filter_fff::make(2, d_taps2);
+    //d_filter = gr::filter::fir_filter_fff::make(2, d_taps2);
+    d_filter = gr::filter::rational_resampler_base_ccf::make(1, 2, d_taps2);
     d_resample = gr::filter::rational_resampler_base_fff::make(12, 1, d_taps);
     d_decoder = dsd_make_block_ff((dsd_frame_mode)0,/*DSD_FRAME_AUTODETECT*/ (dsd_modulation_optimizations)0,/*dsd_MOD_AUTOSELECT*/ 3, true, 3, false);
 
     /* connect block */
-    connect(self(), 0, d_quad, 0);
-    connect(d_quad, 0, d_filter, 0);
-    connect(d_filter, 0, d_decoder, 0);
+    connect(self(), 0, d_filter, 0);
+    connect(d_filter, 0, d_quad, 0);
+    connect(d_quad, 0, d_decoder, 0);
     connect(d_decoder, 0, d_resample, 0);
     connect(d_resample, 0, self(), 0);
 }
@@ -119,65 +120,4 @@ void rx_demod_dsd::set_optimization(int type)
 }
 
 
-
-/*
-void rx_demod_dsd::set_max_dev(float max_dev)
-{
-    float gain;
-
-    if ((max_dev < 500.0) || (max_dev > d_quad_rate/2.0))
-    {
-        return;
-    }
-
-    d_max_dev = max_dev;
-
-    gain = d_quad_rate / (2.0 * M_PI * max_dev);
-    d_quad->set_gain(gain);
-}
-
-void rx_demod_dsd::set_tau(double tau)
-{
-    if (fabs(tau - d_tau) < 1.0e-9)
-    {
-        return;
-    }
-
-    if (tau > 1.0e-9)
-    {
-        calculate_iir_taps(tau);
-        d_deemph->set_taps(d_fftaps, d_fbtaps);
-
-        if (d_tau <= 1.0e-9)
-        {
-            lock();
-            disconnect(d_quad, 0, self(), 0);
-            connect(d_quad, 0, d_deemph, 0);
-            connect(d_deemph, 0, self(), 0);
-            unlock();
-        }
-
-        d_tau = tau;
-    }
-    else
-    {
-#ifndef QT_NO_DEBUG_OUTPUT
-        std::cerr << "DSD de-emphasis tau is 0: " << tau << std::endl;
-#endif
-        if (d_tau > 1.0e-9)
-        {
-#ifndef QT_NO_DEBUG_OUTPUT
-            std::cout << "  Disable de-emphasis" << std::endl;
-#endif
-            lock();
-            disconnect(d_quad, 0, d_deemph, 0);
-            disconnect(d_deemph, 0, self(), 0);
-            connect(d_quad, 0, self(), 0);
-            unlock();
-        }
-
-        d_tau = 0.0;
-    }
-}
-*/
 

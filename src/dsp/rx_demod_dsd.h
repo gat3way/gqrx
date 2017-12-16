@@ -27,6 +27,7 @@
 #include <gnuradio/hier_block2.h>
 #include <gnuradio/filter/firdes.h>
 #include <gnuradio/filter/rational_resampler_base_fff.h>
+#include <gnuradio/filter/rational_resampler_base_ccf.h>
 #include <gnuradio/filter/fir_filter_fff.h>
 #include <vector>
 #include "dsp/rx_agc_xx.h"
@@ -71,7 +72,7 @@ private:
     std::vector<float>                                  d_taps;      /*! Taps for the rational resampler. */
     std::vector<float>                                  d_taps2;     /*! Taps for the lowpass. */
     gr::filter::rational_resampler_base_fff::sptr       d_resample;
-    gr::filter::fir_filter_fff::sptr                    d_filter;
+    gr::filter::rational_resampler_base_ccf::sptr       d_filter;
 
     /* other parameters */
     float       d_quad_rate;     /*! Quadrature rate. */

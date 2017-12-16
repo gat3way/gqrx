@@ -384,7 +384,7 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
       cptr = getFlcoString();
       if(strlen(cptr) > 0)
        {
-         printf(msg,"  EMB: %s \n", cptr);
+         sprintf(msg,"  EMB: %s \n", cptr);
          strcat(state->msgbuf,msg);
        }
     }

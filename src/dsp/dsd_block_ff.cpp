@@ -136,6 +136,7 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
     params.opts.verbose = verbosity;
     params.opts.errorbars = errorbars;
 
+    empty = 0;
     empty_frames = empty;
 
     set_optimization(mod);
@@ -171,7 +172,7 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
     }
 
     if (!empty_frames) {
-        set_output_multiple(320);
+        set_output_multiple(20);
     }
     params.state.msgbuf = (char*)malloc(4096);
     memset(params.state.msgbuf,0,4096);
@@ -465,5 +466,4 @@ int dsd_block_ff::general_work (int noutput_items,
             return (16);
         }
     }
-
 }
