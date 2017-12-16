@@ -264,6 +264,8 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
     frame_mode = frame;
     if (frame == dsd_FRAME_AUTO_DETECT)
     {
+        params.state.samplesPerSymbol = 10;
+        params.state.symbolCenter = 4;
         params.opts.frame_dstar = 0;
         params.opts.frame_x2tdma = 1;
         params.opts.frame_p25p1 = 1;
@@ -274,6 +276,8 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
     }
     else if (frame == dsd_FRAME_DSTAR)
     {
+        params.state.samplesPerSymbol = 10;
+        params.state.symbolCenter = 4;
         params.opts.frame_dstar = 1;
         params.opts.frame_x2tdma = 0;
         params.opts.frame_p25p1 = 0;
@@ -285,6 +289,8 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
     }
     else if (frame == dsd_FRAME_X2_TDMA)
     {
+        params.state.samplesPerSymbol = 10;
+        params.state.symbolCenter = 4;
         params.opts.frame_dstar = 0;
         params.opts.frame_x2tdma = 1;
         params.opts.frame_p25p1 = 0;
@@ -315,6 +321,8 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
     }
     else if (frame == dsd_FRAME_P25_PHASE_1)
     {
+        params.state.samplesPerSymbol = 10;
+        params.state.symbolCenter = 4;
         params.opts.frame_dstar = 0;
         params.opts.frame_x2tdma = 0;
         params.opts.frame_p25p1 = 1;
@@ -345,6 +353,8 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
     }
     else if (frame == dsd_FRAME_NXDN96)
     {
+        params.state.samplesPerSymbol = 10;
+        params.state.symbolCenter = 4;
         params.opts.frame_dstar = 0;
         params.opts.frame_x2tdma = 0;
         params.opts.frame_p25p1 = 0;
@@ -361,6 +371,8 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
     }
     else if (frame == dsd_FRAME_DMR_MOTOTRBO)
     {
+        params.state.samplesPerSymbol = 10;
+        params.state.symbolCenter = 4;
         params.opts.frame_dstar = 0;
         params.opts.frame_x2tdma = 0;
         params.opts.frame_p25p1 = 0;
