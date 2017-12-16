@@ -34,5 +34,12 @@ add_source_files(SRCS_LIST
     p25p1_hdu.c
     p25p1_ldu.c
     provoice.c
+    dmr_ecc.c
+    dmr_cach.c
+    dmr_slco.c
+    dmr_emb.c
+    dmr_flco.c
+    dmr_bptc.c
+    dmr_csbk.c
 )
 

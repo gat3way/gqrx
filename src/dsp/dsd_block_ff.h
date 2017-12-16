@@ -77,7 +77,8 @@ class CdsdProxy: public QObject
             QChar ch = line[line.length()-1];
             if (ch==QChar('\n'))
             {
-                emit sendDecoder(line);
+                int pos = line.lastIndexOf(QChar('\n'));
+                emit sendDecoder(line.left(pos));
                 line.remove(0,line.length());
             }
         }

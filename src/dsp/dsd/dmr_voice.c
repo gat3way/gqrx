@@ -16,6 +16,7 @@
  */
 
 #include "dsd.h"
+#include "dmr.h"
 #include "dmr_const.h"
 
 void
@@ -24,15 +25,17 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
   // extracts AMBE frames from DMR frame
   int i, j, dibit;
   int *dibit_p;
+  char *cptr;
   char ambe_fr[4][24];
   char ambe_fr2[4][24];
   char ambe_fr3[4][24];
   const int *w, *x, *y, *z;
   char sync[25];
-//  char syncdata[25];
-//  char cachdata[13];
+  char syncdata[25];
+  char cachdata[13];
   int mutecurrentslot;
   int msMode;
+  int invertedSync;
   char msg[1024];
 
 #ifdef DMR_DUMP
@@ -44,6 +47,7 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
   msg[0] = 0;
   mutecurrentslot = 0;
   msMode = 0;
+  invertedSync = 0;
 
   dibit_p = state->dibit_buf_p - 144;
   for (j = 0; j < 6; j++)
@@ -82,27 +86,9 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
                   dibit = (dibit ^ 2);
                 }
             }
-//          cachdata[i] = dibit;
-          if (i == 2)
-            {
-              state->currentslot = (1 & (dibit >> 1));  // bit 1
-              if (state->currentslot == 0)
-                {
-                  state->slot0light[0] = '[';
-                  state->slot0light[6] = ']';
-                  state->slot1light[0] = ' ';
-                  state->slot1light[6] = ' ';
-                }
-              else
-                {
-                  state->slot1light[0] = '[';
-                  state->slot1light[6] = ']';
-                  state->slot0light[0] = ' ';
-                  state->slot0light[6] = ' ';
-                }
-            }
+          cachdata[i] = dibit;
         }
-//      cachdata[12] = 0;
+      cachdata[12] = 0;
 
 
 #ifdef DMR_DUMP
@@ -118,6 +104,8 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
       cachbits[24] = 0;
       printf ("%s ", cachbits);
 #endif
+
+      processCach(opts,state,cachdata);
 
       // current slot frame 1
       w = rW;
@@ -191,11 +179,17 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
                   dibit = (dibit ^ 2);
                 }
             }
-//          syncdata[i] = dibit;
+          syncdata[i] = dibit;
           sync[i] = (dibit | 1) + 48;
         }
       sync[24] = 0;
-//      syncdata[24] = 0;
+      syncdata[24] = 0;
+      if(j > 0) // Non-Sync part of the superframe
+      {
+        processEmb (opts, state, syncdata);
+        if ((strcmp (sync, DMR_BS_VOICE_SYNC) == 0) || (strcmp (sync, DMR_MS_VOICE_SYNC) == 0))
+          invertedSync++;
+      }
 
       if ((strcmp (sync, DMR_BS_DATA_SYNC) == 0) || (strcmp (sync, DMR_MS_DATA_SYNC) == 0))
         {
@@ -245,6 +239,7 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
       syncbits[48] = 0;
       printf ("%s ", syncbits);
 #endif
+      processCach(opts,state,cachdata);
 
       // current slot frame 2 second half
       for (i = 0; i < 18; i++)
@@ -295,9 +290,9 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
       for (i = 0; i < 12; i++)
         {
           dibit = getDibit (opts, state);
-//          cachdata[i] = dibit;
+          cachdata[i] = dibit;
         }
-//      cachdata[12] = 0;
+      cachdata[12] = 0;
 
 #ifdef DMR_DUMP
       k = 0;
@@ -321,11 +316,11 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
       for (i = 0; i < 24; i++)
         {
           dibit = getDibit (opts, state);
-//          syncdata[i] = dibit;
+          syncdata[i] = dibit;
           sync[i] = (dibit | 1) + 48;
         }
       sync[24] = 0;
-//      syncdata[24] = 0;
+      syncdata[24] = 0;
 
       if ((strcmp (sync, DMR_BS_DATA_SYNC) == 0) || (msMode == 1))
         {
@@ -379,8 +374,21 @@ processDMRvoice (dsd_opts * opts, dsd_state * state)
 
   if (opts->errorbars == 1)
     {
-      //printf ("\n");
       strcat(state->msgbuf,"\n");
+      cptr = getSlcoString();
+      if(strlen(cptr) > 0)
+       {
+         sprintf(msg,"  CACH: %s \n", cptr);
+         strcat(state->msgbuf,msg);
+       }
+      cptr = getFlcoString();
+      if(strlen(cptr) > 0)
+       {
+         printf(msg,"  EMB: %s \n", cptr);
+         strcat(state->msgbuf,msg);
+       }
     }
+    if(invertedSync >= 2) // Things are inverted
+      opts->inverted_dmr ^= 1;
 
 }

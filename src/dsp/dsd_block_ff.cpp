@@ -335,10 +335,10 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
         params.opts.frame_provoice = 0;
         params.state.samplesPerSymbol = 20;
         params.state.symbolCenter = 10;
-        params.opts.mod_c4fm = 0;
+        params.opts.mod_c4fm = 1;
         params.opts.mod_qpsk = 0;
-        params.opts.mod_gfsk = 1;
-        params.state.rf_mod = 2;
+        params.opts.mod_gfsk = 0;
+        params.state.rf_mod = 0;
         //printf ("Setting symbol rate to 2400 / second\n");
         //printf ("Enabling only GFSK modulation optimizations.\n");
         //printf ("Decoding only NXDN 4800 baud frames.\n");
@@ -352,10 +352,10 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
         params.opts.frame_nxdn96 = 1;
         params.opts.frame_dmr = 0;
         params.opts.frame_provoice = 0;
-        params.opts.mod_c4fm = 0;
+        params.opts.mod_c4fm = 1;
         params.opts.mod_qpsk = 0;
-        params.opts.mod_gfsk = 1;
-        params.state.rf_mod = 2;
+        params.opts.mod_gfsk = 0;
+        params.state.rf_mod = 0;
         //printf ("Enabling only GFSK modulation optimizations.\n");
         //printf ("Decoding only NXDN 9600 baud frames.\n");
     }
@@ -368,6 +368,10 @@ void dsd_block_ff::set_mode(dsd_frame_mode frame)
         params.opts.frame_nxdn96 = 0;
         params.opts.frame_dmr = 1;
         params.opts.frame_provoice = 0;
+        params.opts.mod_c4fm = 1;
+        params.opts.mod_qpsk = 0;
+        params.opts.mod_gfsk = 0;
+        params.state.rf_mod = 0;
         //printf ("Decoding only DMR/MOTOTRBO frames.\n");
     }
 }
