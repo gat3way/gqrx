@@ -33,6 +33,9 @@ processMbeFrame (dsd_opts * opts, dsd_state * state, char imbe_fr[8][23], char a
 #ifdef AMBE_PACKET_OUT
   char ambe_d_str[50];
 #endif
+  char msg[1024];
+
+  msg[0] = 0;
 
   for (i = 0; i < 88; i++)
     {
@@ -71,7 +74,8 @@ processMbeFrame (dsd_opts * opts, dsd_state * state, char imbe_fr[8][23], char a
 
   if (opts->errorbars == 1)
     {
-      printf ("%s", state->err_str);
+      sprintf (msg,"%s", state->err_str);
+      strcat(state->msgbuf,msg);
     }
 
   state->debug_audio_errors += state->errs2;
