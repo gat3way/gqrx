@@ -112,9 +112,9 @@ dsd_state *dsd_block_ff::get_state()
  */
 
 dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations mod, int uvquality, bool errorbars, int verbosity, bool empty, int num)
-  : gr::block ("block_ff",
+  : gr::sync_decimator ("dsd_block_ff",
 	      gr::io_signature::make(MIN_IN, MAX_IN, sizeof (float)),
-	      gr::io_signature::make(MIN_OUT, MAX_OUT, sizeof (float)))
+	      gr::io_signature::make(MIN_OUT, MAX_OUT, sizeof (float)), 6)
 {
     initOpts (&params.opts);
     initState (&params.state);
@@ -172,7 +172,7 @@ dsd_block_ff::dsd_block_ff (dsd_frame_mode frame, dsd_modulation_optimizations m
     }
 
     if (!empty_frames) {
-        set_output_multiple(20);
+        set_output_multiple(120);
     }
     params.state.msgbuf = (char*)malloc(4096);
     memset(params.state.msgbuf,0,4096);
@@ -397,73 +397,68 @@ dsd_frame_mode dsd_block_ff::get_mode()
 
 
 
-
-int dsd_block_ff::general_work (int noutput_items,
-                                gr_vector_int &ninput_items,
-                                gr_vector_const_void_star &input_items,
-                                gr_vector_void_star &output_items)
+int dsd_block_ff::work(int noutput_items,
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items)
 {
-    const float *in = (const float *) input_items[0];
-    float *out = (float *) output_items[0];
+  int i;
+  int send_to_dsd = 0;
+  const float *in = (const float *) input_items[0];
+  float *out = (float *) output_items[0];
 
-    memset(out,0,sizeof(float) * 16);
-    params.state.output_samples = out;
-    memset(out,0,noutput_items);
-    params.state.output_num_samples = 0;
-    params.state.output_length = noutput_items;
-    params.state.output_finished = 0;
+  for (i = 0; i < noutput_items * 6; i++) {
+    if (in[i] != 0) {
+      send_to_dsd = 1;
+      break;
+    }
+  }
+  if (!send_to_dsd) {
+    // All samples are zero, so skip DSD processing.
+    for (i = 0; i < noutput_items; i++) {
+      out[i] = 0;
+    }
+    return noutput_items;
+  }
 
-    if (pthread_mutex_lock(&params.state.input_mutex))
-    {
-        printf("Unable to lock mutex\n");
-    }
-    params.state.input_samples = in;
-    params.state.input_length = ninput_items[0];
-    params.state.input_offset = 0;
-    memset(params.state.msgbuf,0,1024);
+  params.state.output_samples = out;
+  params.state.output_num_samples = 0;
+  params.state.output_length = noutput_items;
+  params.state.output_finished = 0;
 
-    if (pthread_cond_signal(&params.state.input_ready))
-    {
-        printf("Unable to signal\n");
-    }
+  if (pthread_mutex_lock(&params.state.input_mutex))
+  {
+    printf("Unable to lock mutex\n");
+  }
 
-    if (pthread_mutex_unlock(&params.state.input_mutex))
-    {
-        printf("Unable to unlock mutex\n");
-    }
+  params.state.input_samples = in;
+  params.state.input_length = noutput_items * 6;
+  params.state.input_offset = 0;
 
-    while (params.state.output_finished == 0)
-    {
-        if (pthread_cond_wait(&params.state.output_ready, &params.state.output_mutex))
-        {
-            printf("general_work -> Error waiting for condition\n");
-        }
-    }
-    if (params.state.msgbuf[0]!=0)
-    {
-        params.state.msgbuf[1024] = 0;
-        proxy->send(params.state.msgbuf);
-        memset(params.state.msgbuf,0,1024);
-    }
+  if (pthread_cond_signal(&params.state.input_ready))
+  {
+    printf("Unable to signal\n");
+  }
 
-    if (empty_frames) 
-    {
-        this->consume(0, ninput_items[0]);
-        return (ninput_items[0]);
-    }
-    else 
-    {
-        if (params.state.output_num_samples>0)
-        {
-            this->consume(0, ninput_items[0]);
-            return params.state.output_num_samples;
+  if (pthread_mutex_unlock(&params.state.input_mutex))
+  {
+    printf("Unable to unlock mutex\n");
+  }
 
-        }
-        // get the party movin'
-        else
-        {
-            this->consume(0, ninput_items[0]);
-            return (16);
-        }
+  while (params.state.output_finished == 0)
+  {
+    if (pthread_cond_wait(&params.state.output_ready, &params.state.output_mutex))
+    {
+      printf("general_work -> Error waiting for condition\n");
     }
+  }
+  if (params.state.msgbuf[0]!=0)
+  {
+      params.state.msgbuf[1024] = 0;
+      proxy->send(params.state.msgbuf);
+      memset(params.state.msgbuf,0,1024);
+  }
+
+  // Tell runtime system how many output items we produced.
+  return noutput_items;
 }
+

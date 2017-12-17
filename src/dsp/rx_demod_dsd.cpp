@@ -76,8 +76,8 @@ rx_demod_dsd::rx_demod_dsd(float quad_rate)
     d_quad = gr::analog::quadrature_demod_cf::make(gain);
     d_taps = gr::filter::firdes::low_pass(1.0,
                                  96000.0,
-                                 3750,
-                                 500,
+                                 3900,
+                                 100,
                                  gr::filter::firdes::WIN_HAMMING,
                                  6.76
                                 );

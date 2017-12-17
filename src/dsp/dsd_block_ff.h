@@ -126,8 +126,7 @@ dsd_block_ff_sptr dsd_make_block_ff (dsd_frame_mode frame = dsd_FRAME_AUTO_DETEC
  * \brief pass discriminator output through Digital Speech Decoder
  * \ingroup block
  */
-//class  dsd_block_ff : public gr_sync_decimator
-class  dsd_block_ff : public gr::block
+class  dsd_block_ff : virtual public gr::sync_decimator
 {
     private:
         // The friend declaration allows dsd_make_block_ff to
@@ -148,11 +147,9 @@ class  dsd_block_ff : public gr::block
         void set_mode(dsd_frame_mode mode);
         void set_optimization(dsd_modulation_optimizations mode);
         dsd_frame_mode get_mode();
-
-        int general_work (int noutput_items,
-                          gr_vector_int &ninput_items,
-                          gr_vector_const_void_star &input_items,
-                          gr_vector_void_star &output_items);
+        int work(int noutput_items,
+                 gr_vector_const_void_star &input_items,
+                 gr_vector_void_star &output_items);
 };
 
 

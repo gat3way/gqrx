@@ -308,4 +308,5 @@ short dmr_filter(short sample, dsd_state * state);
 short nxdn_filter(short sample, dsd_state * state);
 short allpass_filter(short sample);
 
+
 #endif // DSD_H
