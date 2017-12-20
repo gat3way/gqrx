@@ -227,7 +227,7 @@ void CIsm433::reset()
     memset(signal_pulse_data,0,4000*3*sizeof(int));
     memset(message,0,65535*sizeof(int));
     signal_pulse_counter = 0;
-
+    register_all = 1;
 
     override_short = 0;
     override_long = 0;

@@ -120,7 +120,7 @@ private:
     unsigned int signal_end;
     unsigned int signal_pulse_data[4000][3];
     unsigned int signal_pulse_counter;
-    int register_all = 1;
+    int register_all;
     //struct dm_state* demodstate;
     int duration;
     int flag;
