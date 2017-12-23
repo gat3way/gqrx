@@ -8,7 +8,7 @@ add_source_files(SRCS_LIST
     dsd_file.c
     dsd_main.c
     dsd_upsample.c
-    nxdn_data.c
+    nxdn_data.cpp
     p25p1_heuristics.c
     p25p1_tdu.c
     x2tdma_data.c

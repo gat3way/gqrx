@@ -204,6 +204,7 @@ typedef struct
   float xv[NZEROS+1];
   float nxv[NXZEROS+1];
   char *msgbuf;
+  int trunked_nxdn;
 } dsd_state;
 
 

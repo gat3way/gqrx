@@ -111,6 +111,8 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
     {
       printf ("\nSymbol Timing:\n");
     }
+  state->trunked_nxdn = 0;
+
   while (sync == 0)
     {
       t++;
@@ -317,6 +319,7 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
                     }
                 }
             }
+
 
           strncpy (synctest, (synctest_p - 23), 24);
           if (opts->frame_p25p1 == 1)
@@ -558,7 +561,6 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
                       state->lastsynctype = 8;
                     }
                 }
-              //else if ((strcmp (synctest18, INV_NXDN_BS_VOICE_SYNC) == 0) || (strcmp (synctest18, INV_NXDN_MS_VOICE_SYNC) == 0))
                 else if ((strcmp (synctest18, INV_NXDN_BS_VOICE_SYNC) == 0) || (strcmp (synctest18, INV_NXDN_MS_VOICE_SYNC) == 0)  ||
                         (strcmp (synctest18, INV_NXDN_TC_VOICE_SYNC) == 0) || (strcmp (synctest18, INV_NXDN_TD_VOICE_SYNC) == 0))
                 {
@@ -592,12 +594,21 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
                       state->lastsynctype = 9;
                     }
                 }
-              //else if ((strcmp (synctest18, NXDN_BS_DATA_SYNC) == 0) || (strcmp (synctest18, NXDN_MS_DATA_SYNC) == 0))
                 else if ((strcmp (synctest18, NXDN_BS_DATA_SYNC) == 0) || (strcmp (synctest18, NXDN_MS_DATA_SYNC) == 0)  ||
                         (strcmp (synctest18, NXDN_TC_CC_SYNC) == 0) || (strcmp (synctest18, NXDN_TD_CC_SYNC) == 0))
                 {
                   if ((state->lastsynctype == 8) || (state->lastsynctype == 16))
                     {
+
+                      if (strcmp (synctest18, NXDN_TC_CC_SYNC) == 0)
+                      {
+                        state->trunked_nxdn = 1;
+                      }
+                      else if (strcmp (synctest18, NXDN_TD_CC_SYNC) == 0)
+                      {
+                        state->trunked_nxdn = 2;
+                      }
+
                       state->carrier = 1;
                       state->offset = synctest_pos;
                       state->max = ((state->max) + lmax) / 2;
@@ -626,7 +637,6 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
                       state->lastsynctype = 16;
                     }
                 }
-              //else if ((strcmp (synctest18, INV_NXDN_BS_DATA_SYNC) == 0) || (strcmp (synctest18, INV_NXDN_MS_DATA_SYNC) == 0))
                 else if ((strcmp (synctest18, INV_NXDN_BS_DATA_SYNC) == 0) || (strcmp (synctest18, INV_NXDN_MS_DATA_SYNC) == 0)  ||
                         (strcmp (synctest18, INV_NXDN_TC_CC_SYNC) == 0) || (strcmp (synctest18, INV_NXDN_TD_CC_SYNC) == 0))
                 {
@@ -661,6 +671,7 @@ getFrameSync (dsd_opts * opts, dsd_state * state)
                       state->lastsynctype = 17;
                     }
                 }
+
             }
           if (opts->frame_dstar == 1)
             {
