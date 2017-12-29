@@ -47,9 +47,9 @@ static const int filter_preset_table[DockRxOpt::MODE_LAST][3][2] =
 
 DockRxOpt::DockRxOpt(qint64 filterOffsetRange, QWidget *parent) :
     QDockWidget(parent),
+    hw_freq_hz(144500000),
     ui(new Ui::DockRxOpt),
-    agc_is_on(true),
-    hw_freq_hz(144500000)
+    agc_is_on(true)
 {
     ui->setupUi(this);
 
@@ -136,6 +136,7 @@ DockRxOpt::~DockRxOpt()
 void DockRxOpt::setFilterOffset(qint64 freq_hz)
 {
     ui->filterFreq->setFrequency(freq_hz);
+    hw_offset_hz = freq_hz;
 }
 
 /**

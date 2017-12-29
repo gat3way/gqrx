@@ -44,6 +44,7 @@
 #include "qtgui/cwwin.h"
 #include "qtgui/dsdwin.h"
 #include "qtgui/ism433win.h"
+#include "qtgui/nxdn48win.h"
 #include "qtgui/iq_tool.h"
 
 #include "applications/gqrx/remote_control.h"
@@ -113,6 +114,7 @@ private:
     CwWin          *dec_cw;
     DsdWin         *dec_dsd;
     Ism433Win      *dec_ism433;
+    Nxdn48Win      *dec_nxdn48;
     bool            dec_rds;
 
     QTimer   *dec_timer;
@@ -228,6 +230,7 @@ private slots:
     void on_actionCW_triggered();
     void on_actionDSDD_triggered();
     void on_actionISM433_triggered();
+    void on_actionNXDN48_triggered();
     void on_actionUserGroup_triggered();
     void on_actionNews_triggered();
     void on_actionRemoteProtocol_triggered();
@@ -235,13 +238,13 @@ private slots:
     void on_actionAboutQt_triggered();
     void on_actionAddBookmark_triggered();
 
-
     /* window close signals */
     void afsk1200win_closed();
     void alewin_closed();
     void cwwin_closed();
     void dsdwin_closed();
     void ism433win_closed();
+    void nxdn48win_closed();
     int  firstTimeConfig();
 
     /* cyclic processing */
@@ -250,6 +253,11 @@ private slots:
     void iqFftTimeout();
     void audioFftTimeout();
     void rdsTimeout();
+
+    /* trunking */
+    void trunkReset(qint64 freq);
+    void changeFreq(qint64 freq);
+
 };
 
 #endif // MAINWINDOW_H

@@ -23,7 +23,7 @@ static int  flco_str_valid = 0;
 
 void processFlco( char pf, char flco[7], char fid[9], char payload[97] )
 {
-  int i, j, k;
+  int i, j;
   long l;
   long long ll;
   char tmpStr[81];

@@ -23,7 +23,7 @@ static int  csbk_str_valid = 0;
 
 void processCsbk( char lb, char pf, char csbk[7], char fid[9], char payload[97] )
 {
-  int i, j, k;
+  int i, j;
   long l;
   long long ll;
   char tmpStr[81];

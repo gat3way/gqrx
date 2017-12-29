@@ -68,7 +68,8 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     dec_ale(0),
     dec_cw(0),
     dec_dsd(0),
-    dec_ism433(0)
+    dec_ism433(0),
+    dec_nxdn48(0)
 {
     ui->setupUi(this);
     Bookmarks::create();
@@ -189,6 +190,7 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     connect(ui->freqCtrl, SIGNAL(newFrequency(qint64)), remote, SLOT(setNewFrequency(qint64)));
     connect(ui->freqCtrl, SIGNAL(newFrequency(qint64)), uiDockAudio, SLOT(setRxFrequency(qint64)));
     connect(ui->freqCtrl, SIGNAL(newFrequency(qint64)), uiDockRxOpt, SLOT(setRxFreq(qint64)));
+    connect(ui->freqCtrl, SIGNAL(newFrequency(qint64)), this, SLOT(trunkReset(qint64)));
     connect(uiDockInputCtl, SIGNAL(lnbLoChanged(double)), this, SLOT(setLnbLo(double)));
     connect(uiDockInputCtl, SIGNAL(lnbLoChanged(double)), remote, SLOT(setLnbLo(double)));
     connect(uiDockInputCtl, SIGNAL(gainChanged(QString, double)), this, SLOT(setGain(QString,double)));
@@ -2293,6 +2295,53 @@ void MainWindow::ism433win_closed()
 
 
 
+/**
+ * NXDN48 trunk decoder action triggered.
+ *
+ * This slot is called when the user activates the NXDN48
+ * action. It will create an NXDN48 decoder window.
+ */
+void MainWindow::on_actionNXDN48_triggered()
+{
+
+    if (dec_nxdn48 != 0)
+    {
+        qDebug() << "NXDN48 decoder already active.";
+        dec_nxdn48->raise();
+    }
+    else
+    {
+        qDebug() << "Starting NXDN48 decoder.";
+
+        dec_nxdn48 = new Nxdn48Win(this);
+        connect(dec_nxdn48, SIGNAL(windowClosed()), this, SLOT(nxdn48win_closed()));
+        connect(dec_nxdn48, SIGNAL(changeFreq(qint64)), this, SLOT(changeFreq(qint64)));
+        dec_nxdn48->show();
+        dec_nxdn48->reset(uiDockRxOpt->hw_freq_hz + uiDockRxOpt->hw_offset_hz);
+    }
+}
+
+
+/**
+ * Destroy NXDN48 decoder window got closed.
+ *
+ * This slot is connected to the windowClosed() signal of the NXDN48 decoder
+ * object. We need this to properly destroy the object, stop timeout and clean
+ * up whatever need to be cleaned up.
+ */
+void MainWindow::nxdn48win_closed()
+{
+    /* delete decoder object */
+    delete dec_nxdn48;
+    dec_nxdn48 = 0;
+}
+
+
+
+
+
+
+
 
 /**
  * Cyclic processing for acquiring samples from receiver and processing them
@@ -2578,4 +2627,16 @@ void MainWindow::on_actionAddBookmark_triggered()
         uiDockBookmarks->updateBookmarks();
         ui->plotter->updateOverlay();
     }
+}
+
+
+void MainWindow::trunkReset(qint64 freq)
+{
+    if (dec_nxdn48)
+        dec_nxdn48->reset(freq);
+}
+
+void MainWindow::changeFreq(qint64 freq)
+{
+    ui->freqCtrl->setFrequency(freq);
 }

@@ -226,10 +226,17 @@
     <addaction name="actionDSDD"/>
     <addaction name="actionISM433"/>
    </widget>
+   <widget class="QMenu" name="menu_Trunking">
+    <property name="title">
+     <string>&amp;Trunking</string>
+    </property>
+    <addaction name="actionNXDN48"/>
+   </widget>
 
    <addaction name="menu_File"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_Decoders"/>
+   <addaction name="menu_Trunking"/>
    <addaction name="menu_View"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -350,6 +357,14 @@
    </property>
    <property name="toolTip">
     <string>Start ISM433 decoder</string>
+   </property>
+  </action>
+  <action name="actionNXDN48">
+   <property name="text">
+    <string>NXDN48 Trunking</string>
+   </property>
+   <property name="toolTip">
+    <string>Start NXDN48 Trunking</string>
    </property>
   </action>
   <action name="actionSched">

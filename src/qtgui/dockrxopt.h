@@ -112,6 +112,10 @@ public:
     static int GetEnumForModulationString(QString param);
     static bool IsModulationValid(QString strModulation);
 
+    qint64 hw_freq_hz;   /** Current PLL frequency in Hz. */
+    qint64 hw_offset_hz;   /** Current PLL frequency in Hz. */
+
+
 public slots:
     void setRxFreq(qint64 freq_hz);
     void setCurrentDemod(int demod);
@@ -235,7 +239,6 @@ private:
 
     bool agc_is_on;
 
-    qint64 hw_freq_hz;   /** Current PLL frequency in Hz. */
 };
 
 #endif // DOCKRXOPT_H

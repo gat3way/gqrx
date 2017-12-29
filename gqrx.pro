@@ -139,6 +139,7 @@ SOURCES += \
     src/qtgui/nb_options.cpp \
     src/qtgui/plotter.cpp \
     src/qtgui/qtcolorpicker.cpp \
+    src/qtgui/trunkchannels.cpp \
     src/receivers/nbrx.cpp \
     src/receivers/receiver_base.cpp \
     src/receivers/wfmrx.cpp
@@ -202,6 +203,7 @@ HEADERS += \
     src/qtgui/nb_options.h \
     src/qtgui/plotter.h \
     src/qtgui/qtcolorpicker.h \
+    src/qtgui/trunkchannels.h \
     src/receivers/nbrx.h \
     src/receivers/receiver_base.h \
     src/receivers/wfmrx.h \
@@ -216,6 +218,8 @@ HEADERS += \
 FORMS += \
     src/applications/gqrx/mainwindow.ui \
     src/applications/gqrx/remote_control_settings.ui \
+    src/qtgui/trunkchannels.ui \
+    src/qtgui/nxdn48.ui \
     src/qtgui/afsk1200win.ui \
     src/qtgui/alewin.ui \
     src/qtgui/cwwin.ui \

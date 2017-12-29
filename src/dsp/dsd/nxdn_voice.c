@@ -11,6 +11,7 @@ processNXDNVoice (dsd_opts * opts, dsd_state * state)
   char msg[1024];
 
   msg[0] = 0;
+  state->trunkdata.newdata = 1;
 
   if (opts->errorbars == 1)
     {

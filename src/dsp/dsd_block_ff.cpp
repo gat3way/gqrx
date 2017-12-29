@@ -455,7 +455,14 @@ int dsd_block_ff::work(int noutput_items,
   {
       params.state.msgbuf[1024] = 0;
       proxy->send(params.state.msgbuf);
+      proxy->trunknxdn_send(&params);
+      params.state.trunkdata.newdata = 0;
       memset(params.state.msgbuf,0,1024);
+  }
+  else
+  {
+      params.state.trunkdata.newdata = 0;
+      proxy->trunknxdn_send(&params);
   }
 
   // Tell runtime system how many output items we produced.

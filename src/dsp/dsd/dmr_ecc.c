@@ -571,7 +571,7 @@ void doCRC16(char bit)
 
 static int pp [mm+1] = { 1, 0, 1, 1, 1, 0, 0, 0, 1} ; /* specify irreducible polynomial coeffts */
 static int alpha_to [nn+1], index_of [nn+1], gg [nn-kk+1] ;
-static int recd [nn], data [kk], bb [nn-kk] ;
+static int recd [nn];//, data [kk], bb [nn-kk] ;
 static int rsInput [nn];
 
 
@@ -734,7 +734,7 @@ static int decode_rs()
             else
               d[u+1] = 0 ;
             for (i=1; i<=l[u+1]; i++)
-              if ((s[u+1-i]!=-1) && (elp[u+1][i]!=0))
+              if ((s[u+1-i]!=-1) && ((u+1)<(nn-kk+2)) && (i<(nn-kk)) && (elp[u+1][i]!=0))
                 d[u+1] ^= alpha_to[(s[u+1-i]+index_of[elp[u+1][i]])%nn] ;
             d[u+1] = index_of[d[u+1]] ;    /* put d[u+1] into index form */
           }

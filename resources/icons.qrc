@@ -23,5 +23,7 @@
         <file>icons/terminal.svg</file>
         <file>icons/left.svg</file>
         <file>icons/right.svg</file>
+        <file>icons/table.svg</file>
+        <file>icons/arrows.svg</file>
     </qresource>
 </RCC>

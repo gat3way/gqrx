@@ -83,8 +83,38 @@ class CdsdProxy: public QObject
             }
         }
 
+        void trunknxdn_send(dsd_params *opts)
+        {
+            if (opts->state.trunkdata.newdata)
+            {
+                if (opts->state.trunkdata.trunkid>=0)
+                    emit sendNxdnTrunkid(opts->state.trunkdata.trunkid);
+                if (opts->state.trunkdata.fixedchan>=0)
+                {
+                    emit sendNxdnTrunkChan(opts->state.trunkdata.fixedchan,opts->state.trunkdata.fixedsteps,opts->state.trunkdata.fixedbase);
+                }
+                if (opts->state.trunkdata.regunit>=0)
+                {
+                    emit sendNxdnTrunkReg(opts->state.trunkdata.regunit,opts->state.trunkdata.regdst);
+                }
+                if (opts->state.trunkdata.callsrc>=0)
+                {
+                    emit sendNxdnTrunkCall(opts->state.trunkdata.callsrc,opts->state.trunkdata.calldst,opts->state.trunkdata.callchan);
+                }
+                emit sendNxdnNodata(1);
+            }
+            else
+                emit sendNxdnNodata(0);
+        }
+
+
     signals:
         void sendDecoder(QString msg);
+        void sendNxdnTrunkid(int id);
+        void sendNxdnTrunkChan(int chan,int steps, int base);
+        void sendNxdnTrunkReg(int regunit,int regdst);
+        void sendNxdnTrunkCall(int src,int dst, int chan);
+        void sendNxdnNodata(int src);
 
     private:
         static CdsdProxy* instance;

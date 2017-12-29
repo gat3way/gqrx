@@ -13,7 +13,7 @@ using std::endl;
 #endif
 
 
-static const uint16_t start_state = 0x154;//0x154;//0xe4;
+static const uint16_t start_state = 0x154;
 static uint16_t lfsr_state;
 
 
@@ -105,8 +105,8 @@ static void process_rtch_sacch(dsd_opts * opts, dsd_state * state)
 {
 #ifdef ITPP_FOUND
     unsigned char rawdata[60];
-    unsigned char rawdata2[60];
     unsigned char deconv[36];
+    char msg[1024];
     int i;
     // ITPP stuff
     bvec iinput(60);
@@ -119,10 +119,9 @@ static void process_rtch_sacch(dsd_opts * opts, dsd_state * state)
     Punctured_Convolutional_Code conv_code;
     vec encoded(72), modulated(72);
     ivec decoded(36);
-    unsigned char byte=0;
-
 
     // Initialize stuff
+    msg[0] = 0;
     lfsr_state = start_state;
     memset(rawdata,0,60);
     memset(deconv,0,36);
@@ -133,38 +132,7 @@ static void process_rtch_sacch(dsd_opts * opts, dsd_state * state)
         char a = getDibit (opts, state);
         rawdata[i] = lfsr()^(a>>1);
         rawdata[i+1] = a&1;
-        rawdata2[i] = a>>1;
-        rawdata2[i+1] = a&1;
     }
-
-/*
-    printf("\noriginal ");
-    for (i=0;i<60;i++)
-    {
-        byte |= (rawdata2[i]<<(7-(i%8)));
-        if ((i%8)==7)
-        {
-            printf("[%02x]",byte);
-            byte = 0;
-        }
-        printf("%02x ",rawdata2[i]);
-    }
-    printf("\n");
-
-    printf("\ndescrambled ");
-    byte = 0;
-    for (i=0;i<60;i++)
-    {
-        byte |= (rawdata[i]<<(7-(i%8)));
-        if ((i%8)==7)
-        {
-            printf("[%02x]",byte);
-            byte = 0;
-        }
-        printf("%02x ",rawdata[i]);
-    }
-    printf("\n");
-*/
 
     for (i=0;i<60;i++)
         iinput[i] = rawdata[i];
@@ -172,9 +140,6 @@ static void process_rtch_sacch(dsd_opts * opts, dsd_state * state)
     deinterleaver.set_rows(5);
     deinterleaver.set_cols(12);
     ioutput = deinterleaver.interleave(iinput);
-
-//    cout << "AHOYdeinterleaved = " << ioutput << endl;
-//    cout << "AHOYpreinterleaved = " << iinput << endl;
 
     // Octal
     generators.set_size(2, false);
@@ -188,27 +153,16 @@ static void process_rtch_sacch(dsd_opts * opts, dsd_state * state)
     conv_code.set_truncation_length(32);
     modulated = bpsk.modulate_bits(ioutput);
 
-    encoded = modulated;// + sqrt(0.5)*randn(encoded.size());
-//    cout << "AHOYBPSK = " << encoded << endl;
+    encoded = modulated;
     conv_code.decode(encoded,decoded_bits);
-//    cout << "AHOYfinal = " << decoded_bits << endl;
     decoded = to_ivec(decoded_bits);
-
-
-    printf("SACCH = ");
-    for (i=0;i<36;i++)
-    {
-        deconv[i] = decoded[i];
-        printf("%02x ",deconv[i]);
-    }
-    printf("\n");
 
     char flags = (deconv[8]<<1)|(deconv[9]);
     char msgtype = deconv[15]|(deconv[14]<<1)|(deconv[13]<<2)|(deconv[12]<<3)|(deconv[11]<<4)|(deconv[10]<<5);
-    printf("message type = %02x flags=%02x\n",msgtype,flags);
+    sprintf(msg,"message type = %02x flags=%02x\n",msgtype,flags);
+    strcat(state->msgbuf,msg);
 
 
-    //unsigned short crc = crc6(,3);
 #endif
 }
 
@@ -219,7 +173,6 @@ static void process_rtch_facch1(dsd_opts * opts, dsd_state * state)
 {
 #ifdef ITPP_FOUND
     unsigned char rawdata[144];
-    unsigned char rawdata2[144];
     unsigned char deconv[96];
     int i;
     // ITPP stuff
@@ -233,7 +186,6 @@ static void process_rtch_facch1(dsd_opts * opts, dsd_state * state)
     Punctured_Convolutional_Code conv_code;
     vec encoded(144), modulated(144);
     ivec decoded(96);
-    unsigned char byte=0;
 
     memset(rawdata,0,144);
     memset(deconv,0,96);
@@ -243,38 +195,7 @@ static void process_rtch_facch1(dsd_opts * opts, dsd_state * state)
         char a = getDibit (opts, state);
         rawdata[i] = lfsr()^(a>>1);
         rawdata[i+1] = a&1;
-        rawdata2[i] = a>>1;
-        rawdata2[i+1] = a&1;
     }
-
-/*
-    printf("\noriginal ");
-    for (i=0;i<144;i++)
-    {
-        byte |= (rawdata2[i]<<(7-(i%8)));
-        if ((i%8)==7)
-        {
-            printf("[%02x]",byte);
-            byte = 0;
-        }
-        printf("%02x ",rawdata2[i]);
-    }
-    printf("\n");
-
-    printf("\ndescrambled ");
-    byte = 0;
-    for (i=0;i<144;i++)
-    {
-        byte |= (rawdata[i]<<(7-(i%8)));
-        if ((i%8)==7)
-        {
-            printf("[%02x]",byte);
-            byte = 0;
-        }
-        printf("%02x ",rawdata[i]);
-    }
-    printf("\n");
-*/
 
     for (i=0;i<144;i++)
         iinput[i] = rawdata[i];
@@ -282,9 +203,6 @@ static void process_rtch_facch1(dsd_opts * opts, dsd_state * state)
     deinterleaver.set_rows(9);
     deinterleaver.set_cols(16);
     ioutput = deinterleaver.interleave(iinput);
-
-//    cout << "AHOYdeinterleaved = " << ioutput << endl;
-//    cout << "AHOYpreinterleaved = " << iinput << endl;
 
     // Octal
     generators.set_size(2, false);
@@ -298,25 +216,16 @@ static void process_rtch_facch1(dsd_opts * opts, dsd_state * state)
     conv_code.set_truncation_length(32);
     modulated = bpsk.modulate_bits(ioutput);
 
-    encoded = modulated;// + sqrt(0.5)*randn(encoded.size());
-//    cout << "AHOYBPSK = " << encoded << endl;
+    encoded = modulated;
     conv_code.decode(encoded,decoded_bits);
-//    cout << "AHOYfinal = " << decoded_bits << endl;
     decoded = to_ivec(decoded_bits);
 
-    //printf("FACCH1 = ");
     for (i=0;i<96;i++)
     {
         deconv[i] = decoded[i];
-        //printf("%02x ",deconv[i]);
     }
-    //printf("\n");
 
 
-
-
-
-    //unsigned short crc = crc6(,3);
 #endif
 }
 
@@ -326,7 +235,6 @@ static void process_rcch_cac1(dsd_opts * opts, dsd_state * state)
 {
 #ifdef ITPP_FOUND
     unsigned char rawdata[300];
-    unsigned char rawdata2[300];
     unsigned char deconv[175];
     int i;
     // ITPP stuff
@@ -340,19 +248,30 @@ static void process_rcch_cac1(dsd_opts * opts, dsd_state * state)
     Punctured_Convolutional_Code conv_code;
     vec encoded(300), modulated(300);
     ivec decoded(175);
-    unsigned char byte=0;
+    unsigned char byte;
+    char msg[1024];
 
+    msg[0] = 0;
     lfsr_state = start_state;
     memset(rawdata,0,300);
     memset(deconv,0,175);
+
+    state->trunkdata.newdata = 0;
+    state->trunkdata.trunkid = 0;
+    state->trunkdata.nxdntype = 0;
+    state->trunkdata.fixedchan = -1;
+    state->trunkdata.fixedbase = -1;
+    state->trunkdata.callchan = -1;
+    state->trunkdata.callsrc = -1;
+    state->trunkdata.calldst = -1;
+    state->trunkdata.regunit = -1;
+    state->trunkdata.regdst = -1;
 
     for (i = 0; i < 300; i+=2)
     {
         char a = getDibit (opts, state);
         rawdata[i] = lfsr()^(a>>1);
         rawdata[i+1] = a&1;
-        rawdata2[i] = a>>1;
-        rawdata2[i+1] = a&1;
     }
 
 
@@ -362,9 +281,6 @@ static void process_rcch_cac1(dsd_opts * opts, dsd_state * state)
     deinterleaver.set_rows(25);
     deinterleaver.set_cols(12);
     ioutput = deinterleaver.interleave(iinput);
-
-//    cout << "AHOYdeinterleaved = " << ioutput << endl;
-//    cout << "AHOYpreinterleaved = " << iinput << endl;
 
     // Octal
     generators.set_size(2, false);
@@ -378,7 +294,7 @@ static void process_rcch_cac1(dsd_opts * opts, dsd_state * state)
     conv_code.set_truncation_length(32);
     modulated = bpsk.modulate_bits(ioutput);
 
-    encoded = modulated;// + sqrt(0.5)*randn(encoded.size());
+    encoded = modulated;
     conv_code.decode(encoded,decoded_bits);
     decoded = to_ivec(decoded_bits);
 
@@ -388,78 +304,143 @@ static void process_rcch_cac1(dsd_opts * opts, dsd_state * state)
     }
     
 
-    byte = get_byte(deconv,0);
-    int ran = byte & 0x3F;
+    //byte = get_byte(deconv,0);
+    //int ran = byte & 0x3F;
     byte = get_byte(deconv,1) & 0x3F;
+
     // Site information
     if (byte==0x18)
     {
-        printf("Site information - ");
-        printf("Location ID: %02x%02x%02x ",get_byte(deconv,2),get_byte(deconv,3),get_byte(deconv,4));
-        printf("Chan.Struct: %02x%02x ",get_byte(deconv,5),get_byte(deconv,6));
-        printf("Serv.Info: %02x%02x\n",get_byte(deconv,7),get_byte(deconv,8));
+        sprintf(msg,"Site information - ");
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Location ID: %02x%02x%02x ",get_byte(deconv,2),get_byte(deconv,3),get_byte(deconv,4));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Chan.Access: %02x ",get_byte(deconv,12));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Serv.Info: %02x%02x\n",get_byte(deconv,7),get_byte(deconv,8));
+        strcat(state->msgbuf,msg);
+        state->trunkdata.trunkid = (get_byte(deconv,2)<<16|get_byte(deconv,3)<<8|get_byte(deconv,4));
+        if (get_byte(deconv,12)>>7)
+        {
+            state->trunkdata.fixedchan = 1;
+            state->trunkdata.fixedsteps = (get_byte(deconv,12)>>6)&3;
+            state->trunkdata.fixedbase = (get_byte(deconv,12)>>5)&7;
+        }
+        else 
+        {
+            state->trunkdata.fixedchan = 0;
+            state->trunkdata.fixedbase = 0;
+            state->trunkdata.fixedsteps = 0;
+        }
+        state->trunkdata.trunkid = ((get_byte(deconv,2)<<16)|(get_byte(deconv,3)<<8)|get_byte(deconv,4));
+        state->trunkdata.newdata = 1;
     }
     // Service information
     else if (byte==0x19)
     {
-        printf("Service information - ");
-        printf("Location ID: %02x%02x%02x ",get_byte(deconv,2),get_byte(deconv,3),get_byte(deconv,4));
-        printf("Serv. Info: %02x%02x\n",get_byte(deconv,5),get_byte(deconv,6));
+        sprintf(msg,"Service information - ");
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Location ID: %02x%02x%02x ",get_byte(deconv,2),get_byte(deconv,3),get_byte(deconv,4));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Serv. Info: %02x%02x\n",get_byte(deconv,5),get_byte(deconv,6));
+        strcat(state->msgbuf,msg);
+        state->trunkdata.trunkid = ((get_byte(deconv,2)<<16)|(get_byte(deconv,3)<<8)|get_byte(deconv,4));
+        state->trunkdata.newdata = 1;
     }
     // Digital Information
     else if (byte==0x17)
     {
-        printf("Station ID information - ");
+        sprintf(msg,"Station ID information - ");
+        strcat(state->msgbuf,msg);
         byte = get_byte(deconv,2);
-        printf("Option: %02x ",byte);
-        printf("ID: %c%c%c%c%c%c\n",get_byte(deconv,3),get_byte(deconv,4),get_byte(deconv,5),get_byte(deconv,6),get_byte(deconv,7),get_byte(deconv,8));
+        sprintf(msg,"Option: %02x ",byte);
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"ID: %c%c%c%c%c%c\n",get_byte(deconv,3),get_byte(deconv,4),get_byte(deconv,5),get_byte(deconv,6),get_byte(deconv,7),get_byte(deconv,8));
+        strcat(state->msgbuf,msg);
     }
-    else if (byte==0x17)
+    else if (byte==0x20)
     {
-        printf("Station ID information - ");
-        byte = get_byte(deconv,2);
-        printf("Option: %02x ",byte);
-        printf("ID: %c%c%c%c%c%c\n",get_byte(deconv,3),get_byte(deconv,4),get_byte(deconv,5),get_byte(deconv,6),get_byte(deconv,7),get_byte(deconv,8));
+        sprintf(msg,"Registration response - ");
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Destination unit: %02x%02x ",get_byte(deconv,5),get_byte(deconv,6));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Group: %02x%02x\n",get_byte(deconv,7),get_byte(deconv,8));
+        strcat(state->msgbuf,msg);
+        state->trunkdata.regunit = ((get_byte(deconv,5)<<8)|get_byte(deconv,6));
+        state->trunkdata.regdst = ((get_byte(deconv,7)<<8)|get_byte(deconv,8));
+        state->trunkdata.newdata = 1;
     }
+
     else if (byte==0x1)
     {
-        printf("Voice Call Response - ");
-        printf("Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
-        printf("Dest. ID: %02x%02x ",get_byte(deconv,6),get_byte(deconv,7));
-        printf("Cipher Type: %02x\n",get_byte(deconv,8)>>6);
+        sprintf(msg,"Voice Call Response - ");
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Dest. ID: %02x%02x ",get_byte(deconv,6),get_byte(deconv,7));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Cipher Type: %02x\n",get_byte(deconv,8)>>6);
+        strcat(state->msgbuf,msg);
     }
     else if (byte==0x2)
     {
-        printf("Voice Call Reception Request - ");
-        printf("Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
-        printf("Dest. ID: %02x%02x\n",get_byte(deconv,6),get_byte(deconv,7));
+        sprintf(msg,"Voice Call Reception Request - ");
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Dest. ID: %02x%02x\n",get_byte(deconv,6),get_byte(deconv,7));
+        strcat(state->msgbuf,msg);
     }
     else if (byte==0x3)
     {
-        printf("Voice Call Connection Response - ");
-        printf("Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
-        printf("Dest. ID: %02x%02x\n",get_byte(deconv,6),get_byte(deconv,7));
+        sprintf(msg,"Voice Call Connection Response - ");
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Dest. ID: %02x%02x\n",get_byte(deconv,6),get_byte(deconv,7));
+        strcat(state->msgbuf,msg);
     }
     else if ((byte==0x4)||(byte==0x5))
     {
-        printf("Voice Call Assignment - ");
-        printf("Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
-        printf("Dest. ID: %02x%02x ",get_byte(deconv,6),get_byte(deconv,7));
-        printf("Channel: %d\n",(int)((get_byte(deconv,8)&3)<<8)|get_byte(deconv,9));
+        sprintf(msg,"Voice Call Assignment - ");
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Source ID: %02x%02x ",get_byte(deconv,4),get_byte(deconv,5));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Dest. ID: %02x%02x ",get_byte(deconv,6),get_byte(deconv,7));
+        strcat(state->msgbuf,msg);
+        sprintf(msg,"Channel: %d\n",(int)((get_byte(deconv,8)&3)<<8)|get_byte(deconv,9));
+        strcat(state->msgbuf,msg);
+        state->trunkdata.callsrc = ((get_byte(deconv,4)<<8)|get_byte(deconv,5));
+        state->trunkdata.calldst = ((get_byte(deconv,6)<<8)|get_byte(deconv,7));
+        state->trunkdata.callchan = (int)(((get_byte(deconv,8)&3)<<8)|get_byte(deconv,9));
+        state->trunkdata.newdata = 1;
     }
     else if (byte==0x10)
-        printf("Idle.\n");
+    {
+        sprintf(msg,"Idle.\n");
+        strcat(state->msgbuf,msg);
+    }
     else if (byte==0x1a)
-        printf("CC information\n");
+    {
+        sprintf(msg,"CC information\n");
+        strcat(state->msgbuf,msg);
+    }
     else if (byte==0x1b)
-        printf("Adjacent site information\n");
+    {
+        sprintf(msg,"Adjacent site information\n");
+        strcat(state->msgbuf,msg);
+    }
     else if (byte==0x1c)
-        printf("System failure notification\n");
-    else printf("Unknown Message type=%02x\n",byte);
-    
-    
+    {
+        sprintf(msg,"System failure notification\n");
+        strcat(state->msgbuf,msg);
+    }
+    else 
+    {
+        sprintf(msg,"Unknown Message type=%02x\n",byte);
+        strcat(state->msgbuf,msg);
+    }
 
-    //unsigned short crc = crc6(,3);
 #endif
 }
 
@@ -506,11 +487,20 @@ processNXDNData (dsd_opts * opts, dsd_state * state)
                     if (((lich[4] << 1) | lich[5])==0)
                         process_rcch_cac1(opts,state);
                     else if(((lich[4] << 1) | lich[5])==1)
-                        printf("Idle data\n");
+                    {
+                        sprintf(msg,"Idle data\n");
+                        strcat(state->msgbuf,msg);
+                    }
                     else if(((lich[4] << 1) | lich[5])==2)
-                        printf("Common data\n");
+                    {
+                        sprintf(msg,"Common data\n");
+                        strcat(state->msgbuf,msg);
+                    }
                     else
-                        printf("Impossible (bad decode?!?)\n");
+                    {
+                        sprintf(msg,"Impossible (bad decode?!?)\n");
+                        strcat(state->msgbuf,msg);
+                    }
                 }
                 break;
             case 1:

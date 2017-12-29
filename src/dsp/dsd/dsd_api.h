@@ -47,6 +47,22 @@
 #define NZEROS 60 // because filter is static
 #define NXZEROS 134
 
+typedef struct
+{
+    int newdata;
+    int trunkid;
+    int nxdntype;
+    int fixedchan;
+    int fixedbase;
+    int fixedsteps;
+    int callchan;
+    int callsrc;
+    int calldst;
+    int regunit;
+    int regdst;
+} nxdn_trunk_t;
+
+
 
 typedef struct
 {
@@ -205,6 +221,7 @@ typedef struct
   float nxv[NXZEROS+1];
   char *msgbuf;
   int trunked_nxdn;
+  nxdn_trunk_t trunkdata;
 } dsd_state;
 
 
