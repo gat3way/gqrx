@@ -25,14 +25,14 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
-#include "nxdn48win.h"
-#include "ui_nxdn48win.h"
+#include "nxdnwin.h"
+#include "ui_nxdnwin.h"
 #include "../dsp/dsd_block_ff.h"
 
 
-Nxdn48Win::Nxdn48Win(QWidget *parent) :
+NxdnWin::NxdnWin(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Nxdn48Win)
+    ui(new Ui::NxdnWin)
 {
     ui->setupUi(this);
 
@@ -62,15 +62,15 @@ Nxdn48Win::Nxdn48Win(QWidget *parent) :
     controlfreq = 0;
 }
 
-Nxdn48Win::~Nxdn48Win()
+NxdnWin::~NxdnWin()
 {
-    qDebug() << "NXDN48 decoder destroyed.";
+    qDebug() << "NXDN decoder destroyed.";
 
     delete ui;
 }
 
 
-void Nxdn48Win::reset(qint64 freq)
+void NxdnWin::reset(qint64 freq)
 {
     QString str;
     char msg[255];
@@ -79,18 +79,20 @@ void Nxdn48Win::reset(qint64 freq)
     trunkbase = trunksteps = trunkchan = trunkid = trunkready = -1;
     trunkcallsrc = trunkcalldst = trunkcallchan = -1;
     trunkregid = trunkreggroup = trunkstandard = -1;
-    sprintf(msg,"Frequency reset: new frequency %lld Hz",freq);
     if (!trunking)
+    {
+        sprintf(msg,"Frequency reset: new frequency %lld Hz",freq);
+        str.append(msg);
+        ui->textView->appendPlainText(msg);
         controlfreq = freq;
-    str.append(msg);
-    ui->textView->appendPlainText(msg);
+    }
 }
 
 
 
 
 /*! \brief Catch window close events and emit signal so that main application can destroy us. */
-void Nxdn48Win::closeEvent(QCloseEvent *ev)
+void NxdnWin::closeEvent(QCloseEvent *ev)
 {
     Q_UNUSED(ev);
 
@@ -99,13 +101,13 @@ void Nxdn48Win::closeEvent(QCloseEvent *ev)
 
 
 /*! \brief User clicked on the Clear button. */
-void Nxdn48Win::on_actionClear_triggered()
+void NxdnWin::on_actionClear_triggered()
 {
     ui->textView->clear();
 }
 
 
-void Nxdn48Win::on_actionTable_triggered()
+void NxdnWin::on_actionTable_triggered()
 {
     trunktable = new TrunkChannels(this, channelmap);
     connect(trunktable, SIGNAL(channelsEnforce(QMap<int,channel_t>)), this, SLOT(channelsEnforce(QMap<int,channel_t>)));
@@ -114,7 +116,7 @@ void Nxdn48Win::on_actionTable_triggered()
 }
 
 
-void Nxdn48Win::on_actionTrunk_triggered()
+void NxdnWin::on_actionTrunk_triggered()
 {
     QString str;
     char msg[255];
@@ -144,7 +146,7 @@ void Nxdn48Win::on_actionTrunk_triggered()
 
 
 /*! \brief User clicked on the Clear button. */
-void Nxdn48Win::trunktable_closed()
+void NxdnWin::trunktable_closed()
 {
     delete trunktable;
     trunktable = 0;
@@ -153,7 +155,7 @@ void Nxdn48Win::trunktable_closed()
 
 
 /*! \brief User clicked on the Save button. */
-void Nxdn48Win::on_actionSave_triggered()
+void NxdnWin::on_actionSave_triggered()
 {
     /* empty text view has blockCount = 1 */
     if (ui->textView->blockCount() < 2) {
@@ -184,20 +186,20 @@ void Nxdn48Win::on_actionSave_triggered()
 
 
 /*! \brief User clicked Info button. */
-void Nxdn48Win::on_actionInfo_triggered()
+void NxdnWin::on_actionInfo_triggered()
 {
-    QMessageBox::about(this, tr("About NXDN48 Trunk Decoder"),
-                       tr("<p>Gqrx NXDN48 Trunk Decoder %1</p>"
-                          "<p>The Gqrx NXDN48 decoder taps directly into the SDR signal path "
+    QMessageBox::about(this, tr("About NXDN Trunk Decoder"),
+                       tr("<p>Gqrx NXDN Trunk Decoder %1</p>"
+                          "<p>The Gqrx NXDN decoder taps directly into the SDR signal path "
                           "eliminating the need to mess with virtual or real audio cables. "
-                          "It can manage NXDN48 Type-C trunking. Please use DSD demod with NXDN48 frame type.</p>"
+                          "It can manage NXDN Type-C trunking. Please use DSD demod with NXDN frame type.</p>"
                           ).arg(VERSION));
 
 }
 
 
 
-void Nxdn48Win::channelsEnforce(QMap<int,channel_t> map)
+void NxdnWin::channelsEnforce(QMap<int,channel_t> map)
 {
     QString str;
     char msg[255];
@@ -210,65 +212,30 @@ void Nxdn48Win::channelsEnforce(QMap<int,channel_t> map)
 }
 
 
-void Nxdn48Win::trunkReady()
+void NxdnWin::trunkReady()
 {
     QString str;
     char msg[255];
+    msg[0] = 0;
 
     if ((trunkready<0)&&(trunkready<2))
     {
         trunkready = 1;
         trunkstandard = 1;
-        if (trunkbase == 0)
-        {
+        if (!trunking)
             sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d)\nNon-standard band plan used, please define a band plan",trunkid);
-            trunkstandard = 0;
-        }
-        else
+        trunkstandard = 0;
+        if (msg[0])
         {
-            if (trunksteps==2)
-            {
-                if (trunkbase == 1)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 100MHz, steps: 1.25 KHz)",trunkid);
-                else if (trunkbase == 2)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 330MHz, steps: 1.25 KHz)",trunkid);
-                else if (trunkbase == 3)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 400MHz, steps: 1.25 KHz)",trunkid);
-                else if (trunkbase == 4)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 750MHz, steps: 1.25 KHz)",trunkid);
-                else if (channelmap.size()==0)
-                {
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d)\nNon-standard band plan used, please define a band plan",trunkid);
-                    trunkstandard = 0;
-                }
-            }
-            else if (trunksteps==3)
-            {
-                if (trunkbase == 1)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 100MHz, steps: 3.125 KHz)",trunkid);
-                else if (trunkbase == 2)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 330MHz, steps: 3.125 KHz)",trunkid);
-                else if (trunkbase == 3)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 400MHz, steps: 3.125 KHz)",trunkid);
-                else if (trunkbase == 4)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d, base: 750MHz, steps: 3.125 KHz)",trunkid);
-                else if (channelmap.size()==0)
-                    sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d)\nNon-standard band plan used, please define a band plan",trunkid);
-            }
-            else
-            {
-                sprintf(msg,"NXDN48 Trunk Control Channel detected (ID: %d)\nNon-standard band plan used, please define a band plan",trunkid);
-                trunkstandard = 0;
-            }
+            str.append(msg);
+            ui->textView->appendPlainText(msg);
         }
-        str.append(msg);
-        ui->textView->appendPlainText(msg);
     }
 }
 
 
 
-void Nxdn48Win::sendNxdnTrunkid(int id)
+void NxdnWin::sendNxdnTrunkid(int id)
 {
     trunkid = id;
     if ((trunkid>=0) && (trunksteps>=0) && (trunkchan>=0))
@@ -276,7 +243,7 @@ void Nxdn48Win::sendNxdnTrunkid(int id)
 }
 
 
-void Nxdn48Win::sendNxdnTrunkChan(int chan,int steps, int base)
+void NxdnWin::sendNxdnTrunkChan(int chan,int steps, int base)
 {
     trunkchan = chan;
     trunksteps = steps;
@@ -285,7 +252,7 @@ void Nxdn48Win::sendNxdnTrunkChan(int chan,int steps, int base)
         trunkReady();
 }
 
-void Nxdn48Win::sendNxdnTrunkReg(int regunit,int regdst)
+void NxdnWin::sendNxdnTrunkReg(int regunit,int regdst)
 {
     if ((trunkregid!=regunit) && (trunkreggroup!=regdst) && (trunkready==1))
     {
@@ -299,7 +266,7 @@ void Nxdn48Win::sendNxdnTrunkReg(int regunit,int regdst)
     }
 }
 
-void Nxdn48Win::sendNxdnTrunkCall(int src,int dst, int chan)
+void NxdnWin::sendNxdnTrunkCall(int src,int dst, int chan)
 {
     int key;
 
@@ -335,7 +302,7 @@ void Nxdn48Win::sendNxdnTrunkCall(int src,int dst, int chan)
     }
 }
 
-void Nxdn48Win::sendNxdnNodata(int state)
+void NxdnWin::sendNxdnNodata(int state)
 {
     QString str;
     char msg[255];

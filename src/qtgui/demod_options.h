@@ -25,6 +25,7 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include "dsp/dsd_block_ff.h"
 
 namespace Ui {
     class CDemodOptions;
@@ -66,6 +67,9 @@ public:
 
     void setEmph(double tau);
     double getEmph(void) const;
+
+    void setDsdFrameType(dsd_frame_mode mode);
+    dsd_frame_mode getDsdFrameType();
 
 signals:
     /*! \brief Signal emitted when new FM deviation is selected. */

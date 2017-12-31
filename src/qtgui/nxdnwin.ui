@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Nxdn48Win</class>
- <widget class="QMainWindow" name="Nxdn48Win">
+ <class>NxdnWin</class>
+ <widget class="QMainWindow" name="NxdnWin">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>NXDN48 Trunk Decoder</string>
+   <string>NXDN Trunk Decoder</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../resources/icons.qrc">
@@ -151,7 +151,7 @@
     <string>Close</string>
    </property>
    <property name="toolTip">
-    <string>Close NXDN48 trunk decoder window</string>
+    <string>Close NXDN trunk decoder window</string>
    </property>
   </action>
   <action name="actionInfo">
@@ -163,7 +163,7 @@
     <string>Info</string>
    </property>
    <property name="toolTip">
-    <string>Show info about NXDN48 trunk decoder</string>
+    <string>Show info about NXDN trunk decoder</string>
    </property>
   </action>
  </widget>
@@ -174,7 +174,7 @@
   <connection>
    <sender>actionClose</sender>
    <signal>triggered()</signal>
-   <receiver>Nxdn48Win</receiver>
+   <receiver>NxdnWin</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -347,6 +347,12 @@ void DockRxOpt::readSettings(QSettings *settings)
     if (conv_ok && dbl_val >= 0)
         demodOpt->setEmph(1.0e-6 * dbl_val); // was stored as usec
 
+
+    int_val = settings->value("receiver/dsd_frametype", 0).toInt(&conv_ok);
+    if (conv_ok)
+        demodOpt->setDsdFrameType((dsd_frame_mode)int_val);
+
+
     qint64 offs = settings->value("receiver/offset", 0).toInt(&conv_ok);
     if (offs)
     {
@@ -418,6 +424,14 @@ void DockRxOpt::saveSettings(QSettings *settings)
         settings->remove("receiver/fm_maxdev");
     else
         settings->setValue("receiver/fm_maxdev", int_val);
+
+
+    int_val = (int)demodOpt->getDsdFrameType();
+    if (int_val < 0)
+        settings->remove("receiver/dsd_frametype");
+    else
+        settings->setValue("receiver/dsd_frametype", int_val);
+
 
     // save as usec
     int_val = (int)(1.0e6 * demodOpt->getEmph());

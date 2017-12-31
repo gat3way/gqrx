@@ -20,8 +20,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef NXDN48WIN_H
-#define NXDN48WIN_H
+#ifndef NXDNWIN_H
+#define NXDNWIN_H
 
 #include <QMainWindow>
 #include <QVarLengthArray>
@@ -30,18 +30,18 @@
 
 
 namespace Ui {
-    class Nxdn48Win;
+    class NxdnWin;
 }
 
 
-/*! \brief NXDN48 trunk decoder window. */
-class Nxdn48Win : public QMainWindow
+/*! \brief NXDN trunk decoder window. */
+class NxdnWin : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit Nxdn48Win(QWidget *parent = 0);
-    ~Nxdn48Win();
+    explicit NxdnWin(QWidget *parent = 0);
+    ~NxdnWin();
     void process_samples(float *buffer, int length);
     void reset(qint64 freq);
 
@@ -67,7 +67,7 @@ private slots:
     void channelsEnforce(QMap<int,channel_t> channels);
 
 private:
-    Ui::Nxdn48Win *ui;  /*! Qt Designer form. */
+    Ui::NxdnWin *ui;  /*! Qt Designer form. */
     TrunkChannels *trunktable;
     void trunkReady();
     int trunkid;
@@ -88,4 +88,4 @@ private:
     int zeroframes;
 };
 
-#endif // NXDN48WIN_H
+#endif // NXDNWIN_H

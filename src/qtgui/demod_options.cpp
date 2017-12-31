@@ -146,6 +146,17 @@ float CDemodOptions::getMaxDev(void) const
     return maxdev_from_index(ui->maxdevSelector->currentIndex());
 }
 
+void CDemodOptions::setDsdFrameType(dsd_frame_mode mode)
+{
+    ui->frametypeSelector->setCurrentIndex((int)mode);
+    emit dsdFrametypeSelected(mode);
+}
+
+dsd_frame_mode CDemodOptions::getDsdFrameType()
+{
+    return (dsd_frame_mode)ui->frametypeSelector->currentIndex();
+}
+
 void CDemodOptions::setEmph(double tau)
 {
     ui->emphSelector->setCurrentIndex((tau_to_index(tau)));

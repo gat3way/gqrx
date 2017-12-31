@@ -46,7 +46,7 @@ typedef boost::shared_ptr<rx_demod_dsd> rx_demod_dsd_sptr;
  * of raw pointers, rx_demod_dsd's constructor is private.
  * make_rx_dmod_dsd is the public interface for creating new instances.
  */
-rx_demod_dsd_sptr make_rx_demod_dsd(float quad_rate);
+rx_demod_dsd_sptr make_rx_demod_dsd(float quad_rate, dsd_frame_mode frametype);
 
 /*! \brief DSD demodulator.
  *  \ingroup DSP
@@ -59,7 +59,7 @@ class rx_demod_dsd : public gr::hier_block2
 {
 
 public:
-    rx_demod_dsd(float quad_rate); // FIXME: should be private
+    rx_demod_dsd(float quad_rate, dsd_frame_mode frametype); // FIXME: should be private
     ~rx_demod_dsd();
     void set_frame_type(int type);
     void set_optimization(int type);
@@ -76,6 +76,7 @@ private:
 
     /* other parameters */
     float       d_quad_rate;     /*! Quadrature rate. */
+    dsd_frame_mode d_frame_type;
 };
 
 #endif

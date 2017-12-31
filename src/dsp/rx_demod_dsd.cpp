@@ -49,9 +49,9 @@ enum dsd_modulation_optimizations {
 */
 
 /* Create a new instance of rx_demod_dsd and return a boost shared_ptr. */
-rx_demod_dsd_sptr make_rx_demod_dsd(float quad_rate)
+rx_demod_dsd_sptr make_rx_demod_dsd(float quad_rate, dsd_frame_mode frametype)
 {
-    return gnuradio::get_initial_sptr(new rx_demod_dsd(quad_rate));
+    return gnuradio::get_initial_sptr(new rx_demod_dsd(quad_rate, frametype));
 }
 
 static const int MIN_IN = 1;  /* Mininum number of input streams. */
@@ -59,11 +59,12 @@ static const int MAX_IN = 1;  /* Maximum number of input streams. */
 static const int MIN_OUT = 1; /* Minimum number of output streams. */
 static const int MAX_OUT = 1; /* Maximum number of output streams. */
 
-rx_demod_dsd::rx_demod_dsd(float quad_rate)
+rx_demod_dsd::rx_demod_dsd(float quad_rate, dsd_frame_mode frametype)
     : gr::hier_block2 ("rx_demod_dsd",
                       gr::io_signature::make (MIN_IN, MAX_IN, sizeof (gr_complex)),
                       gr::io_signature::make (MIN_OUT, MAX_OUT, sizeof (float))),
-    d_quad_rate(quad_rate)
+    d_quad_rate(quad_rate),
+    d_frame_type(frametype)
 {
     float gain;
 
@@ -92,7 +93,7 @@ rx_demod_dsd::rx_demod_dsd(float quad_rate)
     //d_filter = gr::filter::fir_filter_fff::make(2, d_taps2);
     d_filter = gr::filter::rational_resampler_base_ccf::make(1, 2, d_taps2);
     d_resample = gr::filter::rational_resampler_base_fff::make(12, 1, d_taps);
-    d_decoder = dsd_make_block_ff((dsd_frame_mode)0,/*DSD_FRAME_AUTODETECT*/ (dsd_modulation_optimizations)0,/*dsd_MOD_AUTOSELECT*/ 3, true, 3, false);
+    d_decoder = dsd_make_block_ff((dsd_frame_mode)d_frame_type, (dsd_modulation_optimizations)0,/*dsd_MOD_AUTOSELECT*/ 3, true, 3, false);
 
     /* connect block */
     connect(self(), 0, d_filter, 0);

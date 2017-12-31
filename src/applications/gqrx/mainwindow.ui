@@ -230,7 +230,7 @@
     <property name="title">
      <string>&amp;Trunking</string>
     </property>
-    <addaction name="actionNXDN48"/>
+    <addaction name="actionNXDN"/>
    </widget>
 
    <addaction name="menu_File"/>
@@ -359,12 +359,12 @@
     <string>Start ISM433 decoder</string>
    </property>
   </action>
-  <action name="actionNXDN48">
+  <action name="actionNXDN">
    <property name="text">
-    <string>NXDN48 Trunking</string>
+    <string>NXDN Trunking</string>
    </property>
    <property name="toolTip">
-    <string>Start NXDN48 Trunking</string>
+    <string>Start NXDN Trunking</string>
    </property>
   </action>
   <action name="actionSched">

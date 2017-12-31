@@ -3,8 +3,8 @@
 add_source_files(SRCS_LIST
 	trunkchannels.cpp
 	trunkchannels.h
-	nxdn48win.cpp
-	nxdn48win.h
+	nxdnwin.cpp
+	nxdnwin.h
 	afsk1200win.cpp
 	afsk1200win.h
 	alewin.cpp
@@ -62,7 +62,7 @@ add_source_files(SRCS_LIST
 # Add the source files to UI_SRCS_LIST
 add_source_files(UI_SRCS_LIST
 	trunkchannels.ui
-	nxdn48win.ui
+	nxdnwin.ui
 	afsk1200win.ui
 	alewin.ui
 	cwwin.ui
