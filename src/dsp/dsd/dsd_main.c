@@ -212,10 +212,10 @@ initState (dsd_state * state)
   sprintf (state->algid, "________");
   sprintf (state->keyid, "________________");
   state->currentslot = 0;
+#ifdef MBE_FOUND
   state->cur_mp = malloc (sizeof (mbe_parms));
   state->prev_mp = malloc (sizeof (mbe_parms));
   state->prev_mp_enhanced = malloc (sizeof (mbe_parms));
-#ifdef MBE_FOUND
   mbe_initMbeParms (state->cur_mp, state->prev_mp, state->prev_mp_enhanced);
 #endif
   state->p25kid = 0;
