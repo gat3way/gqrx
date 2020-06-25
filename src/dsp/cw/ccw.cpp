@@ -237,7 +237,7 @@ void CCw::reset()
     change_freq(bestfreq);
 
 
-    alloc = (size_t)detector_data.samples_buff_len * sizeof(short) * 24000 * 100;
+    alloc = (size_t)detector_data.samples_buff_len * sizeof(short)*100;// * 24000 * 100;
     detector_data.samples_buff = (short int*)malloc(alloc);
     for( idx = 0; idx < (int)(alloc/(sizeof(short))); idx++ )
         detector_data.samples_buff[idx] = 0;
@@ -377,10 +377,16 @@ bool CCw::Get_Fragment(float *in)
 
     block_size = detector_data.frag_len;
 
+
     for( frag_timer = 0; frag_timer < detector_data.frag_len; frag_timer++ )
     {
         tmp = in[frag_timer];
-
+/*
+        if (tmp<0)
+            tmp = std::max(tmp*3,(float)-1.0);
+        else if (tmp>0)
+            tmp = std::min(tmp*3,(float)1.0);
+*/
         detector_data.samples_buff[detector_data.samples_buff_idx] = (short int)((tmp*32768.0*0.99));
 
         detector_data.samples_buff_idx++;
@@ -499,6 +505,7 @@ bool CCw::Get_Character(char *chr, float *sample )
     int unit_x8  = rc_data.unit_elem * 8;
     int unit_x16 = rc_data.unit_elem * 16;
 
+
     if( !Get_Fragment(sample) ) return( false );
 
     if ((Flags & MARK_TONE) == MARK_TONE)
@@ -515,6 +522,8 @@ bool CCw::Get_Character(char *chr, float *sample )
     switch( context )
     {
         case MARK_SIGNAL:
+            verbprintf(10,"SIGNAL\n");
+
             if( mark_cnt >= unit_x8 )
             {
                 space_cnt = 0;
@@ -525,11 +534,11 @@ bool CCw::Get_Character(char *chr, float *sample )
             {
                 space_cnt = 1;
                 context = ELEM_SPACE;
-                verbprintf(10,"SPACE\n");
             }
             break;
 
         case ELEM_SPACE:
+            verbprintf(10,"SPACE\n");
             if( space_cnt >= unit_d2 || ((Flags & MARK_TONE) == MARK_TONE) )
             {
                 if( mark_cnt < unit_x2 )
@@ -561,6 +570,7 @@ bool CCw::Get_Character(char *chr, float *sample )
             break;
 
         case CHAR_SPACE:
+            verbprintf(10,"CHAR_SPACE\n");
             if( ((Flags & SPACE_TONE) == SPACE_TONE) )
             {
                 if( space_cnt >= unit_x2 )
@@ -582,6 +592,7 @@ bool CCw::Get_Character(char *chr, float *sample )
             break;
 
         case WAIT_WORD_SPACE:
+            verbprintf(10,"WAIT_WORD_SPACE\n");
             if( ((Flags & SPACE_TONE) == SPACE_TONE) )
             {
                 if( space_cnt >= unit_x5 )
@@ -598,6 +609,7 @@ bool CCw::Get_Character(char *chr, float *sample )
             break;
 
         case WORD_SPACE:
+            verbprintf(10,"WORD_SPACE\n");
             if( ((Flags & SPACE_TONE) == SPACE_TONE) )
             {
                 if( space_cnt >= unit_x7 )
@@ -620,6 +632,7 @@ bool CCw::Get_Character(char *chr, float *sample )
             break;
 
         case WAIT_FOR_MARK:
+            verbprintf(10,"WAIT_FOR_MARK\n");
             if( ((Flags & MARK_TONE) == MARK_TONE) )
             {
                 space_cnt = 0;
@@ -629,6 +642,7 @@ bool CCw::Get_Character(char *chr, float *sample )
             break;
 
         case WAIT_FOR_SPACE:
+            verbprintf(10,"WAIT_FOR_SPACE\n");
             if( ((Flags & SPACE_TONE) == SPACE_TONE) )
             {
                 space_cnt = 1;
@@ -638,6 +652,7 @@ bool CCw::Get_Character(char *chr, float *sample )
             break;
 
         default:
+            verbprintf(10,"DEFAULT?\n");
             if( ((Flags & MARK_TONE) == MARK_TONE) )
                 context = MARK_SIGNAL;
             else

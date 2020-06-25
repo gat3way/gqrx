@@ -45,6 +45,7 @@
 #include "qtgui/dsdwin.h"
 #include "qtgui/ism433win.h"
 #include "qtgui/nxdnwin.h"
+#include "qtgui/mpt1327win.h"
 #include "qtgui/iq_tool.h"
 
 #include "applications/gqrx/remote_control.h"
@@ -114,7 +115,8 @@ private:
     CwWin          *dec_cw;
     DsdWin         *dec_dsd;
     Ism433Win      *dec_ism433;
-    NxdnWin      *dec_nxdn;
+    NxdnWin        *dec_nxdn;
+    Mpt1327Win     *dec_mpt1327;
     bool            dec_rds;
 
     QTimer   *dec_timer;
@@ -231,6 +233,7 @@ private slots:
     void on_actionDSDD_triggered();
     void on_actionISM433_triggered();
     void on_actionNXDN_triggered();
+    void on_actionMPT1327_triggered();
     void on_actionUserGroup_triggered();
     void on_actionNews_triggered();
     void on_actionRemoteProtocol_triggered();
@@ -245,6 +248,7 @@ private slots:
     void dsdwin_closed();
     void ism433win_closed();
     void nxdnwin_closed();
+    void mpt1327win_closed();
     int  firstTimeConfig();
 
     /* cyclic processing */

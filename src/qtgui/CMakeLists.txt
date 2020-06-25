@@ -5,6 +5,8 @@ add_source_files(SRCS_LIST
 	trunkchannels.h
 	nxdnwin.cpp
 	nxdnwin.h
+	mpt1327win.cpp
+	mpt1327win.h
 	afsk1200win.cpp
 	afsk1200win.h
 	alewin.cpp
@@ -63,6 +65,7 @@ add_source_files(SRCS_LIST
 add_source_files(UI_SRCS_LIST
 	trunkchannels.ui
 	nxdnwin.ui
+	mpt1327win.ui
 	afsk1200win.ui
 	alewin.ui
 	cwwin.ui

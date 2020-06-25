@@ -112,6 +112,7 @@ private:
     int period;
     float *history;
     int fftsize;
+    float poweravg;
 };
 
 #endif // CLE_H

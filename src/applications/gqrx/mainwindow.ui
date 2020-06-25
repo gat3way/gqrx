@@ -231,6 +231,7 @@
      <string>&amp;Trunking</string>
     </property>
     <addaction name="actionNXDN"/>
+    <addaction name="actionMPT1327"/>
    </widget>
 
    <addaction name="menu_File"/>
@@ -365,6 +366,14 @@
    </property>
    <property name="toolTip">
     <string>Start NXDN Trunking</string>
+   </property>
+  </action>
+  <action name="actionMPT1327">
+   <property name="text">
+    <string>MPT1327 Trunking</string>
+   </property>
+   <property name="toolTip">
+    <string>Start MPT1327 Trunking</string>
    </property>
   </action>
   <action name="actionSched">

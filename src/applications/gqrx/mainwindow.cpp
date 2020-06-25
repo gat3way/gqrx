@@ -69,7 +69,8 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
     dec_cw(0),
     dec_dsd(0),
     dec_ism433(0),
-    dec_nxdn(0)
+    dec_nxdn(0),
+    dec_mpt1327(0)
 {
     ui->setupUi(this);
     Bookmarks::create();
@@ -2337,9 +2338,58 @@ void MainWindow::nxdnwin_closed()
 }
 
 
+/**
+ * MPT1327 trunk decoder action triggered.
+ *
+ * This slot is called when the user activates the NXDN
+ * action. It will create an NXDN decoder window.
+ */
+void MainWindow::on_actionMPT1327_triggered()
+{
+
+    if (dec_mpt1327 != 0)
+    {
+        qDebug() << "MPT1327 decoder already active.";
+        dec_mpt1327->raise();
+    }
+    else
+    {
+        /* start sample sniffer */
+        if (rx->start_sniffer(10800, DATA_BUFFER_SIZE) == receiver::STATUS_OK)
+        {
+            dec_mpt1327 = new Mpt1327Win(this);
+            connect(dec_mpt1327, SIGNAL(windowClosed()), this, SLOT(mpt1327win_closed()));
+            connect(dec_mpt1327, SIGNAL(changeFreq(qint64)), this, SLOT(changeFreq(qint64)));
+            dec_mpt1327->show();
+            dec_mpt1327->reset(uiDockRxOpt->hw_freq_hz + uiDockRxOpt->hw_offset_hz);
+            dec_timer->start(100);
+        }
+        else
+            QMessageBox::warning(this, tr("Gqrx error"),
+                                 tr("Error starting sample sniffer.\n"
+                                    "Close all data decoders and try again."),
+                                 QMessageBox::Ok, QMessageBox::Ok);
+    }
+}
 
 
+/**
+ * Destroy MPT1327 decoder window got closed.
+ *
+ * This slot is connected to the windowClosed() signal of the MPT1327 decoder
+ * object. We need this to properly destroy the object, stop timeout and clean
+ * up whatever need to be cleaned up.
+ */
+void MainWindow::mpt1327win_closed()
+{
+    /* stop cyclic processing */
+    dec_timer->stop();
+    rx->stop_sniffer();
 
+    /* delete decoder object */
+    delete dec_mpt1327;
+    dec_mpt1327 = 0;
+}
 
 
 
@@ -2361,6 +2411,8 @@ void MainWindow::decoderTimeout()
         dec_cw->process_samples(&buffer[0], num);
     else if (dec_ism433)
         dec_ism433->process_samples(&buffer[0], num);
+    else if (dec_mpt1327)
+        dec_mpt1327->process_samples(&buffer[0], num);
 
 }
 
@@ -2634,6 +2686,8 @@ void MainWindow::trunkReset(qint64 freq)
 {
     if (dec_nxdn)
         dec_nxdn->reset(freq);
+    if (dec_mpt1327)
+        dec_mpt1327->reset(freq);
 }
 
 void MainWindow::changeFreq(qint64 freq)
